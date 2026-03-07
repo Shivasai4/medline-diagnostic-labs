@@ -16,14 +16,14 @@ const slides = [
   {
     title: "Comprehensive Health Profiles",
     text: "Preventive and diagnostic packages designed for fast, reliable reporting.",
-    image: "/placeholder.jpg",
+    image: "/Preventive and diagnostic.jpg",
     cta: "/services",
     ctaLabel: "View Packages",
   },
   {
     title: "Advanced Lab Technology",
     text: "Automation-driven processing and stringent controls for dependable results.",
-    image: "/placeholder.jpg",
+    image: "/Automation-driven.jpg",
     cta: "/contact",
     ctaLabel: "Book a Test",
   },

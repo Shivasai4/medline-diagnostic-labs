@@ -49,7 +49,7 @@ export default function HeroSection() {
           <div className="relative">
             <div className="relative overflow-hidden rounded-3xl border border-primary/15 bg-white shadow-[0_24px_50px_-28px_rgba(11,42,74,0.55)]">
               <Image
-                src="/placeholder.jpg"
+                src="/cover.jpg"
                 alt="Modern diagnostics laboratory"
                 width={900}
                 height={700}
