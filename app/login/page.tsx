@@ -17,7 +17,7 @@ const roles: Record<Role, RoleConfig> = {
   admin: {
     label: "Admin Login",
     title: "Admin Access",
-    subtitle: "Manage appointments, reports, and operations.",
+    subtitle: "Manage website offers and announcements.",
     route: "/admin",
   },
   customer: {
@@ -39,10 +39,16 @@ export default function LoginPage() {
   const [activeRole, setActiveRole] = useState<Role>("admin")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [authError, setAuthError] = useState<string | null>(null)
+  const [authSuccess, setAuthSuccess] = useState<string | null>(null)
 
   const currentRole = roles[activeRole]
 
   const handleRoleClick = (role: Role) => {
+    setAuthError(null)
+    setAuthSuccess(null)
+
     const selectedRole = roles[role]
     if (selectedRole.route.startsWith("http")) {
       window.location.assign(selectedRole.route)
@@ -52,20 +58,67 @@ export default function LoginPage() {
     setActiveRole(role)
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (!email.trim() || !password.trim()) {
       return
     }
 
-    // Support local routes and external portals.
     if (currentRole.route.startsWith("http")) {
       window.location.assign(currentRole.route)
       return
     }
 
-    router.push(currentRole.route)
+    if (activeRole !== "admin") {
+      router.push(currentRole.route)
+      return
+    }
+
+    setIsSubmitting(true)
+    setAuthError(null)
+    setAuthSuccess(null)
+
+    const pendingAdminTab = window.open("", "_blank")
+
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      })
+
+      if (!response.ok) {
+        const result = (await response.json().catch(() => null)) as { error?: string } | null
+        throw new Error(result?.error ?? "Unable to login.")
+      }
+
+      if (pendingAdminTab && !pendingAdminTab.closed) {
+        pendingAdminTab.location.href = "/admin"
+      } else {
+        const adminWindowFallback = window.open("/admin", "_blank")
+        if (!adminWindowFallback) {
+          router.push("/admin")
+        }
+      }
+
+      setAuthSuccess("Admin panel opened in a new tab.")
+      setPassword("")
+    } catch (error) {
+      if (pendingAdminTab && !pendingAdminTab.closed) {
+        pendingAdminTab.close()
+      }
+
+      const message = error instanceof Error ? error.message : "Unable to login right now."
+      setAuthError(message)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -113,11 +166,16 @@ export default function LoginPage() {
 
         <div className="rounded-3xl border border-primary/10 bg-white/92 p-7 shadow-[0_28px_46px_-34px_rgba(11,42,74,0.72)] backdrop-blur-sm lg:p-9">
           <h2 className="text-2xl font-semibold text-navy">{currentRole.label}</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Enter your registered credentials to continue.
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">Enter your registered credentials to continue.</p>
 
           <form onSubmit={handleSubmit} className="mt-7 flex flex-col gap-5">
+            {authError && (
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{authError}</div>
+            )}
+            {authSuccess && (
+              <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">{authSuccess}</div>
+            )}
+
             <div>
               <label className="mb-2 block text-sm font-medium text-foreground">Email Address</label>
               <input
@@ -144,15 +202,13 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="mt-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_-18px_rgba(37,99,235,0.95)] transition hover:bg-primary/90"
+              disabled={isSubmitting}
+              className="mt-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_-18px_rgba(37,99,235,0.95)] transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              Continue to {currentRole.title}
+              {isSubmitting ? "Signing in..." : `Continue to ${currentRole.title}`}
             </button>
 
-            <button
-              type="button"
-              className="text-left text-sm font-medium text-primary/80 transition hover:text-primary"
-            >
+            <button type="button" className="text-left text-sm font-medium text-primary/80 transition hover:text-primary">
               Forgot Password?
             </button>
           </form>
@@ -161,7 +217,3 @@ export default function LoginPage() {
     </section>
   )
 }
-
-
-
-

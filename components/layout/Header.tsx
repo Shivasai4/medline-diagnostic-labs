@@ -83,31 +83,31 @@ export default function Header() {
   }, [pathname])
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center gap-3 sm:h-24">
+    <header className="sticky top-0 z-50 border-b border-border/60 bg-white/95 backdrop-blur-sm">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-[72px] items-center justify-between gap-3 sm:h-[80px] lg:h-[88px]">
           <Link href="/" onClick={(event) => handleNavClick(event, "/")} className="shrink-0">
             <Image
               src="/logo.png"
               alt="MedLine Diagnostic Labs"
               width={500}
               height={180}
-              className="h-12 w-auto object-contain sm:h-14 lg:h-16"
+              className="h-11 w-auto object-contain sm:h-12 lg:h-14 xl:h-16"
               priority
             />
           </Link>
 
-          <div className="hidden flex-1 items-center justify-center xl:flex">
-            <nav className="flex items-center gap-1" aria-label="Main navigation">
+          <div className="hidden min-w-0 flex-1 items-center justify-center px-2 lg:flex xl:px-5">
+            <nav className="flex min-w-0 items-center justify-center gap-0.5 xl:gap-1.5" aria-label="Main navigation">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={(event) => handleNavClick(event, link.href)}
-                  className={`relative whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors xl:px-4 xl:text-base ${
+                  className={`relative whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium transition-colors xl:px-3.5 xl:text-base ${
                     isLinkActive(link.href)
                       ? "text-primary"
-                      : "text-foreground/75 hover:text-primary"
+                      : "text-foreground/75 hover:bg-primary/5 hover:text-primary"
                   }`}
                 >
                   {link.label}
@@ -119,11 +119,11 @@ export default function Header() {
             </nav>
           </div>
 
-          <div className="hidden shrink-0 items-center xl:flex">
+          <div className="hidden shrink-0 items-center lg:flex">
             <Link
               href="/contact"
               onClick={(event) => handleNavClick(event, "/contact")}
-              className="rounded-xl bg-primary px-8 py-3 text-base font-semibold text-primary-foreground shadow-[0_10px_18px_-12px_rgba(37,99,235,0.9)] transition hover:bg-primary/90"
+              className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-[0_10px_18px_-12px_rgba(37,99,235,0.9)] transition hover:bg-primary/90 xl:px-8 xl:py-3 xl:text-base"
             >
               Book a Test
             </Link>
@@ -131,8 +131,9 @@ export default function Header() {
 
           <button
             onClick={() => setMobileOpen((prev) => !prev)}
-            className="ml-auto cursor-pointer rounded-lg p-2 text-foreground transition hover:bg-secondary xl:hidden"
+            className="ml-auto cursor-pointer rounded-lg p-2 text-foreground transition hover:bg-secondary lg:hidden"
             aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -140,27 +141,27 @@ export default function Header() {
       </div>
 
       {mobileOpen && (
-        <div className="bg-white xl:hidden">
-          <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-4 pb-4 pt-3 sm:px-6 lg:px-8">
+        <div className="border-t border-border/60 bg-white lg:hidden">
+          <nav className="mx-auto flex w-full max-w-7xl flex-col gap-1 overflow-x-hidden px-4 pb-4 pt-3 sm:px-6">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={(event) => handleNavClick(event, link.href)}
-                className={`rounded-lg px-4 py-3 text-sm font-medium transition sm:text-base ${
+                className={`w-full rounded-lg px-4 py-3 text-sm font-medium transition sm:text-base ${
                   isLinkActive(link.href)
                     ? "bg-primary/10 text-primary"
-                    : "text-foreground/80 hover:bg-secondary"
+                    : "text-foreground/80 hover:bg-secondary hover:text-primary"
                 }`}
               >
                 {link.label}
               </Link>
             ))}
-            <div className="mt-2 pt-3">
+            <div className="mt-1 pt-2">
               <Link
                 href="/contact"
                 onClick={(event) => handleNavClick(event, "/contact")}
-                className="block rounded-xl bg-primary px-5 py-3 text-center text-sm font-semibold text-white sm:text-base"
+                className="block w-full rounded-xl bg-primary px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-primary/90 sm:text-base"
               >
                 Book a Test
               </Link>

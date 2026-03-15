@@ -105,9 +105,9 @@ export default function Footer() {
             <a href="#" className="hover:text-primary transition-colors">
               Privacy Policy
             </a>
-            <a href="#" className="hover:text-primary transition-colors">
-              Terms of Service
-            </a>
+            <Link href="/terms" className="hover:text-primary transition-colors">
+              Terms & Conditions
+            </Link>
             <a href="#" className="hover:text-primary transition-colors">
               Refund Policy
             </a>
@@ -117,5 +117,8 @@ export default function Footer() {
     </footer>
   )
 }
+
+
+
 
 

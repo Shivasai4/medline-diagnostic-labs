@@ -1,126 +1,90 @@
-import Link from "next/link"
-import { Users, Briefcase, ShieldCheck, Wrench, Building2, TrendingUp } from "lucide-react"
+import Image from "next/image"
 
-const teamCategories = [
+const teamMembers = [
   {
-    icon: Briefcase,
-    code: "EM",
-    title: "Executive Management",
-    subtitle: "Strategic Leadership & Operations",
-    experience: "25+ Years Experience",
-    tags: ["Strategic Vision", "Operational Excellence", "Healthcare Quality"],
-    description: "Led by highly experienced professionals in the field of medical diagnostics with over 25 years of specialized expertise.",
+    id: "founder",
+    label: "Founder Leadership",
+    name: "Dr. Ganji Venu",
+    title: "Founder & MD",
+    image: "/venu.png",
+    imageAlt: "Dr. Ganji Venu, Founder and MD",
+    description:
+      "MedLine Diagnostic Labs (MDL) serves primarily as a reference laboratory with fully automated equipment to cater to the needs of patients, physicians, laboratories, and hospitals.",
+    points: [
+      "MDL specializes in high-complexity diagnostics using state-of-the-art automated platforms.",
+      "By applying these techniques, MDL provides clinicians from different specialties with reliable, tailored diagnostic information for better diagnosis, evaluation, and treatment planning.",
+    ],
   },
   {
-    icon: Users,
-    code: "SMC",
-    title: "Senior Medical Consultants",
-    subtitle: "Clinical Oversight & Diagnostic Excellence",
-    experience: "Expert Level",
-    tags: ["Clinical Oversight", "Diagnostic Interpretation", "Patient Care"],
-    description: "Highly seasoned medical professionals with extensive clinical and laboratory expertise who provide clinical oversight.",
-  },
-  {
-    icon: ShieldCheck,
-    code: "QAL",
-    title: "Quality Assurance Leadership",
-    subtitle: "Quality Management & Compliance",
-    experience: "Veteran Level",
-    tags: ["Quality Management", "Safety Compliance", "Accreditation"],
-    description: "Veterans dedicated to maintaining high standards of quality, safety, and compliance within the laboratory.",
-  },
-  {
-    icon: Wrench,
-    code: "TEaS",
-    title: "Technical Experts & Supervisors",
-    subtitle: "Laboratory Operations & Technical Excellence",
-    experience: "20+ Years Experience",
-    tags: ["Hematology", "Microbiology", "Histopathology"],
-    description: "Technologists and technicians with over 20 years of specialized experience in laboratory procedures across various disciplines.",
-  },
-  {
-    icon: Building2,
-    code: "AaOM",
-    title: "Administrative & Operations",
-    subtitle: "Healthcare Administration & Operations",
-    experience: "Seasoned Professionals",
-    tags: ["Staffing", "Procurement", "Regulatory Compliance"],
-    description: "Seasoned professionals who manage the day-to-day administrative functions including staffing, procurement, and logistics.",
-  },
-  {
-    icon: TrendingUp,
-    code: "BDaML",
-    title: "Business Development",
-    subtitle: "Market Expansion & Strategic Growth",
-    experience: "Veteran Level",
-    tags: ["Market Analysis", "Strategic Partnerships", "Brand Recognition"],
-    description: "Veterans with deep understanding of the healthcare market, responsible for expanding the laboratory's client base.",
+    id: "advisor",
+    label: "Medical Advisory",
+    name: "Dr. Mahender B Dewal",
+    title: "Medical Advisor | Ph.D. from MIT, USA",
+    image: "/mahender.png",
+    imageAlt: "Dr. Mahender B Dewal, Medical Advisor",
+    description:
+      "Founding Member and Chief Scientific Officer at Expansion Technologies Inc. and MIT affiliate, Cambridge, USA.",
+    points: [
+      "Provides strategic scientific guidance to strengthen quality-driven diagnostics and innovation at MedLine Labs.",
+      "Supports long-term clinical vision, research alignment, and advanced testing excellence at MedLine.",
+    ],
   },
 ]
 
 export default function TeamSection() {
   return (
-    <section className="bg-background py-20 lg:py-24">
+    <section className="bg-background py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <h2 className="text-3xl sm:text-4xl font-bold text-primary text-balance">
-            Our Team
-          </h2>
-          <p className="text-muted-foreground mt-4 leading-relaxed text-pretty">
-            Our team comprises highly qualified pathologists, medical technologists, and laboratory professionals with over 20 years of collective experience.
-          </p>
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-accent hover:text-accent/80 transition-colors"
-          >
-            Read more <span aria-hidden="true">&rarr;</span>
-          </Link>
+        <div className="mb-10 text-center lg:mb-12">
+          <h2 className="text-3xl font-bold text-primary sm:text-4xl">Our Team</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {teamCategories.map((cat) => (
-            <div
-              key={cat.code}
-              className="bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/30"
+        <div className="space-y-8">
+          {teamMembers.map((member) => (
+            <article
+              key={member.id}
+              className="rounded-[20px] border border-primary/15 bg-card/95 p-5 shadow-sm sm:p-6 lg:p-7"
             >
-              <div className="flex items-center gap-4 mb-4">
-                <div className="h-12 w-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
-                  {cat.code}
+              <div className="grid items-start gap-6 md:grid-cols-[220px_minmax(0,1fr)] md:gap-8">
+                <div className="relative mx-auto h-[190px] w-[190px] overflow-hidden rounded-[18px] sm:h-[220px] sm:w-[220px] md:mx-0">
+                  <Image
+                    src={member.image}
+                    alt={member.imageAlt}
+                    fill
+                    sizes="(max-width: 640px) 190px, 220px"
+                    className="object-cover"
+                  />
                 </div>
+
                 <div>
-                  <h3 className="text-base font-bold text-primary leading-tight">{cat.title}</h3>
-                  <p className="text-xs text-muted-foreground">{cat.subtitle}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">
+                    {member.label}
+                  </p>
+                  <h3 className="mt-2 text-3xl font-bold text-primary sm:text-4xl">
+                    {member.name}
+                  </h3>
+                  <p className="mt-1 text-base font-medium tracking-wide text-slate-700 sm:text-lg">
+                    {member.title}
+                  </p>
+                  <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+                    {member.description}
+                  </p>
+                  <div className="mt-3 space-y-2.5">
+                    {member.points.map((point) => (
+                      <p
+                        key={point}
+                        className="text-sm leading-relaxed text-muted-foreground sm:text-base"
+                      >
+                        {point}
+                      </p>
+                    ))}
+                  </div>
                 </div>
               </div>
-              <div className="mb-3">
-                <span className="inline-flex rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
-                  {cat.experience}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                {cat.description}
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {cat.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-1 mt-4 text-xs font-semibold text-accent hover:text-accent/80 transition-colors"
-              >
-                Read more <span aria-hidden="true">&rarr;</span>
-              </Link>
-            </div>
+            </article>
           ))}
         </div>
       </div>
     </section>
   )
 }
-
