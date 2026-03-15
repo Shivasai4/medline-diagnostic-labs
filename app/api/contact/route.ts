@@ -37,6 +37,22 @@ const subjectByType: Record<FormType, string> = {
   career: "New Career Application",
 }
 
+function readEnv(name: string) {
+  const value = process.env[name]
+  const trimmed = value?.trim()
+  return trimmed ? trimmed : undefined
+}
+
+function parsePort(value: string | undefined) {
+  if (!value) {
+    return 587
+  }
+
+  const cleaned = value.replace(/[^\d]/g, "")
+  const parsed = Number.parseInt(cleaned, 10)
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 587
+}
+
 function sanitizeValue(value: unknown) {
   return String(value ?? "").trim().slice(0, 5000)
 }
@@ -93,15 +109,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Please fill all required fields." }, { status: 400 })
     }
 
-    const smtpHost = process.env.SMTP_HOST
-    const smtpPort = Number(process.env.SMTP_PORT ?? "587")
-    const smtpUser = process.env.SMTP_USER
-    const smtpPass = process.env.SMTP_PASS
-    const smtpFrom = process.env.SMTP_FROM ?? smtpUser
+    const smtpHost = readEnv("SMTP_HOST") ?? "smtp.gmail.com"
+    const smtpPort = parsePort(readEnv("SMTP_PORT"))
+    const smtpUser = readEnv("SMTP_USER")
+    const smtpPass = readEnv("SMTP_PASS")
+    const smtpFrom = readEnv("SMTP_FROM") ?? smtpUser
+    const smtpSecure = readEnv("SMTP_SECURE")
+    const useSecureConnection = smtpSecure ? smtpSecure.toLowerCase() === "true" : smtpPort === 465
 
-    if (!smtpHost || !smtpPort || !smtpUser || !smtpPass || !smtpFrom) {
+    if (!smtpUser || !smtpPass || !smtpFrom) {
       return NextResponse.json(
-        { error: "Email service is not configured. Please set SMTP environment variables." },
+        {
+          error:
+            "Email service is not configured. Please set SMTP_USER, SMTP_PASS, and SMTP_FROM in Vercel environment variables.",
+        },
         { status: 500 },
       )
     }
@@ -111,7 +132,11 @@ export async function POST(request: Request) {
     const transporter = nodemailer.createTransport({
       host: smtpHost,
       port: smtpPort,
-      secure: smtpPort === 465,
+      secure: useSecureConnection,
+      requireTLS: !useSecureConnection,
+      connectionTimeout: 15_000,
+      greetingTimeout: 15_000,
+      socketTimeout: 20_000,
       auth: {
         user: smtpUser,
         pass: smtpPass,
@@ -137,6 +162,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("contact-email-error", error)
+    const maybeError = error as { code?: string; message?: string } | undefined
+
+    if (maybeError?.code === "EAUTH") {
+      return NextResponse.json(
+        { error: "SMTP authentication failed. Check SMTP_USER/SMTP_PASS and app password settings." },
+        { status: 500 },
+      )
+    }
+
+    if (maybeError?.code === "ECONNECTION" || maybeError?.code === "ETIMEDOUT") {
+      return NextResponse.json(
+        { error: "Unable to connect to email server. Check SMTP_HOST/SMTP_PORT on Vercel." },
+        { status: 500 },
+      )
+    }
+
     return NextResponse.json({ error: "Unable to send message right now." }, { status: 500 })
   }
 }
