@@ -43,6 +43,16 @@ function readEnv(name: string) {
   return trimmed ? trimmed : undefined
 }
 
+function readEnvAny(names: string[]) {
+  for (const name of names) {
+    const value = readEnv(name)
+    if (value) {
+      return value
+    }
+  }
+  return undefined
+}
+
 function parsePort(value: string | undefined) {
   if (!value) {
     return 587
@@ -109,25 +119,30 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Please fill all required fields." }, { status: 400 })
     }
 
-    const smtpHost = readEnv("SMTP_HOST") ?? "smtp.gmail.com"
-    const smtpPort = parsePort(readEnv("SMTP_PORT"))
-    const smtpUser = readEnv("SMTP_USER")
-    const smtpPass = readEnv("SMTP_PASS")
-    const smtpFrom = readEnv("SMTP_FROM") ?? smtpUser
-    const smtpSecure = readEnv("SMTP_SECURE")
+    const smtpHost = readEnvAny(["SMTP_HOST", "MAIL_HOST"]) ?? "smtp.gmail.com"
+    const smtpPort = parsePort(readEnvAny(["SMTP_PORT", "MAIL_PORT"]))
+    const smtpUser = readEnvAny(["SMTP_USER", "SMTP_USERNAME", "MAIL_USER", "EMAIL_USER"])
+    const smtpPass = readEnvAny(["SMTP_PASS", "SMTP_PASSWORD", "MAIL_PASS", "EMAIL_PASS"])
+    const smtpFrom = readEnvAny(["SMTP_FROM", "MAIL_FROM", "EMAIL_FROM"]) ?? smtpUser
+    const smtpSecure = readEnvAny(["SMTP_SECURE", "MAIL_SECURE"])
     const useSecureConnection = smtpSecure ? smtpSecure.toLowerCase() === "true" : smtpPort === 465
 
     if (!smtpUser || !smtpPass || !smtpFrom) {
+      const missing: string[] = []
+      if (!smtpUser) missing.push("SMTP_USER")
+      if (!smtpPass) missing.push("SMTP_PASS")
+      if (!smtpFrom) missing.push("SMTP_FROM")
+
       return NextResponse.json(
         {
-          error:
-            "Email service is not configured. Please set SMTP_USER, SMTP_PASS, and SMTP_FROM in Vercel environment variables.",
+          error: `Email service is not configured. Missing: ${missing.join(", ")}.`,
         },
         { status: 500 },
       )
     }
 
-    const receiverEmail = process.env.CONTACT_RECEIVER_EMAIL ?? DEFAULT_RECEIVER_EMAIL
+    const receiverEmail =
+      readEnvAny(["CONTACT_RECEIVER_EMAIL", "MAIL_TO", "CONTACT_EMAIL"]) ?? DEFAULT_RECEIVER_EMAIL
 
     const transporter = nodemailer.createTransport({
       host: smtpHost,
