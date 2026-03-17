@@ -13,9 +13,9 @@ export default function TechnologySection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
           {/* Automated Analyzers */}
-          <div className="bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:shadow-lg hover:border-primary/30">
+          <div className="bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/30 sm:p-8">
             <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center mb-5">
               <Zap className="h-7 w-7 text-accent" />
             </div>
@@ -30,7 +30,7 @@ export default function TechnologySection() {
           </div>
 
           {/* Molecular Diagnostics */}
-          <div className="bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:shadow-lg hover:border-primary/30">
+          <div className="bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/30 sm:p-8">
             <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
               <Dna className="h-7 w-7 text-primary" />
             </div>
@@ -45,7 +45,7 @@ export default function TechnologySection() {
           </div>
 
           {/* Advanced Microscopy */}
-          <div className="bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:shadow-lg hover:border-primary/30">
+          <div className="bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/30 sm:p-8">
             <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
               <Microscope className="h-7 w-7 text-primary" />
             </div>
@@ -61,7 +61,7 @@ export default function TechnologySection() {
         </div>
 
         {/* Stats bar */}
-        <div className="grid grid-cols-2 gap-6 mt-14 max-w-md mx-auto">
+        <div className="mx-auto mt-14 grid max-w-md grid-cols-2 gap-4 sm:gap-6">
           <div className="text-center">
             <div className="text-4xl font-bold text-primary">99.9%</div>
             <div className="text-sm text-muted-foreground mt-1">Accuracy Rate</div>

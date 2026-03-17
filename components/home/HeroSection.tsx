@@ -9,7 +9,7 @@ export default function HeroSection() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
           <div>
-            <h1 className="font-serif text-4xl font-semibold leading-[1.08] tracking-tight text-primary sm:text-5xl lg:text-[64px]">
+            <h1 className="font-serif text-[34px] font-semibold leading-[1.08] tracking-tight text-primary sm:text-5xl lg:text-[64px]">
               Accurate Reports.
               <span className="mt-1 block text-navy">Faster Clinical Action.</span>
             </h1>
@@ -18,16 +18,18 @@ export default function HeroSection() {
               A clean, trusted diagnostics experience built for MedLine. Advanced lab workflows, strict quality control, and timely reporting across Hyderabad.
             </p>
 
-            <div className="mt-9 flex flex-wrap items-center gap-4">
+            <div className="mt-9 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <Link
-                href="/contact"
-                className="rounded-2xl bg-primary px-9 py-3.5 text-base font-semibold text-primary-foreground shadow-[0_18px_34px_-20px_rgba(37,99,235,0.9)] transition hover:bg-primary/90"
+                href="/book-test"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full rounded-2xl bg-primary px-9 py-3.5 text-center text-base font-semibold text-primary-foreground shadow-[0_18px_34px_-20px_rgba(37,99,235,0.9)] transition hover:bg-primary/90 sm:w-auto"
               >
                 Book a Test
               </Link>
               <Link
                 href="/services"
-                className="rounded-2xl border border-primary/20 bg-white/95 px-9 py-3.5 text-base font-semibold text-primary shadow-[0_14px_26px_-20px_rgba(11,42,74,0.55)] transition hover:bg-primary/5"
+                className="w-full rounded-2xl border border-primary/20 bg-white/95 px-9 py-3.5 text-center text-base font-semibold text-primary shadow-[0_14px_26px_-20px_rgba(11,42,74,0.55)] transition hover:bg-primary/5 sm:w-auto"
               >
                 Explore Services
               </Link>

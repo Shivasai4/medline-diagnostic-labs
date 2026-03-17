@@ -83,7 +83,7 @@ export default function Header() {
   }, [pathname])
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-white/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 overflow-x-clip border-b border-border/60 bg-white/95 backdrop-blur-sm">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-[72px] items-center justify-between gap-3 sm:h-[80px] lg:h-[88px]">
           <Link href="/" onClick={(event) => handleNavClick(event, "/")} className="shrink-0">
@@ -97,33 +97,43 @@ export default function Header() {
             />
           </Link>
 
-          <div className="hidden min-w-0 flex-1 items-center justify-center px-2 lg:flex xl:px-5">
-            <nav className="flex min-w-0 items-center justify-center gap-0.5 xl:gap-1.5" aria-label="Main navigation">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={(event) => handleNavClick(event, link.href)}
-                  className={`relative whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium transition-colors xl:px-3.5 xl:text-base ${
-                    isLinkActive(link.href)
-                      ? "text-primary"
-                      : "text-foreground/75 hover:bg-primary/5 hover:text-primary"
-                  }`}
-                >
-                  {link.label}
-                  {isLinkActive(link.href) && (
-                    <span className="absolute -bottom-1 left-1/2 h-0.5 w-7 -translate-x-1/2 rounded-full bg-primary" />
-                  )}
-                </Link>
-              ))}
+          <div className="hidden min-w-0 flex-1 items-center justify-center px-1 lg:flex xl:px-5">
+            <nav className="flex min-w-0 items-center justify-center gap-0 xl:gap-1.5" aria-label="Main navigation">
+              {navLinks.map((link) => {
+                const isActive = isLinkActive(link.href)
+                const isLoginLink = link.href === "/login"
+
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={(event) => handleNavClick(event, link.href)}
+                    className={
+                      isLoginLink
+                        ? "relative whitespace-nowrap rounded-lg bg-blue-600 px-3 py-2 text-[13px] font-semibold text-white shadow-[0_12px_20px_-12px_rgba(37,99,235,0.95)] transition-colors hover:bg-blue-700 xl:px-4 xl:text-base"
+                        : `relative whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-medium transition-colors xl:px-3.5 xl:py-2 xl:text-base ${
+                            isActive
+                              ? "text-primary"
+                              : "text-foreground/75 hover:bg-primary/5 hover:text-primary"
+                          }`
+                    }
+                  >
+                    {link.label}
+                    {!isLoginLink && isActive && (
+                      <span className="absolute -bottom-1 left-1/2 h-0.5 w-7 -translate-x-1/2 rounded-full bg-primary" />
+                    )}
+                  </Link>
+                )
+              })}
             </nav>
           </div>
 
-          <div className="hidden shrink-0 items-center lg:flex">
+          <div className="hidden shrink-0 items-center xl:flex">
             <Link
-              href="/contact"
-              onClick={(event) => handleNavClick(event, "/contact")}
-              className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-[0_10px_18px_-12px_rgba(37,99,235,0.9)] transition hover:bg-primary/90 xl:px-8 xl:py-3 xl:text-base"
+              href="/book-test"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-[0_10px_18px_-12px_rgba(37,99,235,0.9)] transition hover:bg-primary/90 xl:px-8 xl:py-3 xl:text-base"
             >
               Book a Test
             </Link>
@@ -149,9 +159,11 @@ export default function Header() {
                 href={link.href}
                 onClick={(event) => handleNavClick(event, link.href)}
                 className={`w-full rounded-lg px-4 py-3 text-sm font-medium transition sm:text-base ${
-                  isLinkActive(link.href)
-                    ? "bg-primary/10 text-primary"
-                    : "text-foreground/80 hover:bg-secondary hover:text-primary"
+                  link.href === "/login"
+                    ? "bg-blue-600 text-white shadow-[0_12px_22px_-14px_rgba(37,99,235,0.95)] hover:bg-blue-700"
+                    : isLinkActive(link.href)
+                      ? "bg-primary/10 text-primary"
+                      : "text-foreground/80 hover:bg-secondary hover:text-primary"
                 }`}
               >
                 {link.label}
@@ -159,8 +171,10 @@ export default function Header() {
             ))}
             <div className="mt-1 pt-2">
               <Link
-                href="/contact"
-                onClick={(event) => handleNavClick(event, "/contact")}
+                href="/book-test"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileOpen(false)}
                 className="block w-full rounded-xl bg-primary px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-primary/90 sm:text-base"
               >
                 Book a Test

@@ -14,20 +14,20 @@ export default function ServicesSection() {
         </div>
 
         {/* Service overview cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          <div className="bg-card border border-border rounded-2xl p-8 text-center transition-all duration-300 hover:shadow-lg hover:border-primary/30">
+        <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
+          <div className="bg-card border border-border rounded-2xl p-6 text-center transition-all duration-300 hover:shadow-lg hover:border-primary/30 sm:p-8">
             <h3 className="text-lg font-bold text-primary mb-3">Specialty & Super-Specialty Tests</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Advanced diagnostics for precise disease detection and management.
             </p>
           </div>
-          <div className="bg-card border border-border rounded-2xl p-8 text-center transition-all duration-300 hover:shadow-lg hover:border-primary/30">
+          <div className="bg-card border border-border rounded-2xl p-6 text-center transition-all duration-300 hover:shadow-lg hover:border-primary/30 sm:p-8">
             <h3 className="text-lg font-bold text-primary mb-3">{"Disease & Condition Profiles"}</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Customized test combinations tailored to identify and monitor specific health issues.
             </p>
           </div>
-          <div className="bg-card border border-border rounded-2xl p-8 text-center transition-all duration-300 hover:shadow-lg hover:border-primary/30">
+          <div className="bg-card border border-border rounded-2xl p-6 text-center transition-all duration-300 hover:shadow-lg hover:border-primary/30 sm:p-8">
             <h3 className="text-lg font-bold text-primary mb-3">Wellness Check-ups</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Comprehensive health assessments designed for different age groups, promoting preventive care.

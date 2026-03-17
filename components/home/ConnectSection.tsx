@@ -3,6 +3,7 @@
 import { MapPin, Zap, FileText, Phone, Mail } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import { getIndianPhoneError, sanitizeIndianPhoneInput } from "@/lib/phone-validation"
 
 type ConnectFormType = "partnership"
 
@@ -24,6 +25,20 @@ export default function ConnectSection() {
   const [formData, setFormData] = useState(initialPartnershipForm)
   const [submittingForm, setSubmittingForm] = useState<ConnectFormType | null>(null)
   const [partnershipNotice, setPartnershipNotice] = useState<FormNotice>(null)
+  const [phoneError, setPhoneError] = useState<string | null>(null)
+
+  const validatePhone = (value: string, showRequired: boolean) => {
+    if (!showRequired && !value) {
+      return null
+    }
+    return getIndianPhoneError(value)
+  }
+
+  const handlePhoneChange = (rawValue: string) => {
+    const cleanedValue = sanitizeIndianPhoneInput(rawValue)
+    setFormData((p) => ({ ...p, phone: cleanedValue }))
+    setPhoneError(validatePhone(cleanedValue, false))
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -37,6 +52,19 @@ export default function ConnectSection() {
     const rawData = Object.fromEntries(
       Array.from(new FormData(form).entries()).map(([key, value]) => [key, String(value).trim()]),
     ) as Record<string, string>
+    const cleanedPhone = sanitizeIndianPhoneInput(rawData.phone ?? "")
+    const nextPhoneError = validatePhone(cleanedPhone, true)
+
+    rawData.phone = cleanedPhone
+    setPhoneError(nextPhoneError)
+
+    if (nextPhoneError) {
+      setPartnershipNotice({
+        tone: "error",
+        message: nextPhoneError,
+      })
+      return
+    }
 
     setSubmittingForm(formType)
     setPartnershipNotice(null)
@@ -65,6 +93,7 @@ export default function ConnectSection() {
 
       form.reset()
       setFormData(initialPartnershipForm)
+      setPhoneError(null)
     } catch (submitError) {
       const message = submitError instanceof Error ? submitError.message : "Something went wrong."
       setPartnershipNotice({
@@ -86,7 +115,7 @@ export default function ConnectSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
           <div className="flex flex-col gap-6">
             <div className="rounded-2xl border border-border bg-card p-6">
               <div className="mb-4 flex items-center gap-3">
@@ -188,7 +217,7 @@ export default function ConnectSection() {
               </div>
             )}
             <form data-form-type="partnership" onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <input
                   name="firstName"
                   type="text"
@@ -222,9 +251,15 @@ export default function ConnectSection() {
                 placeholder="Phone Number"
                 value={formData.phone}
                 required
-                onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))}
-                className="rounded-lg border border-input bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                inputMode="numeric"
+                maxLength={10}
+                onChange={(e) => handlePhoneChange(e.target.value)}
+                onBlur={() => setPhoneError(validatePhone(formData.phone, true))}
+                className={`rounded-lg border bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring ${
+                  phoneError ? "border-red-400 focus:ring-red-200" : "border-input"
+                }`}
               />
+              {phoneError && <p className="text-xs text-red-600">{phoneError}</p>}
               <input
                 name="organization"
                 type="text"

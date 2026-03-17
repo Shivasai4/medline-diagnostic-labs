@@ -5,8 +5,8 @@ import { Phone, Mail, MapPin, Clock } from "lucide-react"
 export default function Footer() {
   return (
     <footer className="bg-secondary text-primary">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
           {/* Column 1: Brand */}
           <div className="flex flex-col gap-4">
             <Link href="/" className="flex items-center">
@@ -15,7 +15,7 @@ export default function Footer() {
                 alt="MedLine Diagnostic Labs"
                 width={420}
                 height={140}
-                className="h-24 w-auto object-contain"
+                className="h-20 w-auto object-contain sm:h-24"
               />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -99,9 +99,9 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 text-center text-xs text-muted-foreground sm:flex-row sm:px-6 sm:text-left lg:px-8">
           <p>(c) 2026 MedLine Diagnostic Labs. All rights reserved.</p>
-          <div className="flex items-center gap-5">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-end sm:gap-5">
             <a href="#" className="hover:text-primary transition-colors">
               Privacy Policy
             </a>

@@ -13,7 +13,9 @@ export default function CtaSection() {
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
           <Link
-            href="/contact"
+            href="/book-test"
+            target="_blank"
+            rel="noopener noreferrer"
             className="rounded-lg bg-primary text-primary-foreground px-6 py-3 text-sm font-medium transition-all duration-200 hover:bg-primary/90 cursor-pointer"
           >
             Book Appointment

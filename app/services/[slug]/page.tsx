@@ -57,9 +57,6 @@ export default async function ServiceDetailPage({
             <div>
               <h1 className="text-3xl sm:text-4xl font-bold text-primary text-balance">{service.name}</h1>
               <div className="flex flex-wrap items-center gap-3 mt-4">
-                <span className="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary">
-                  {service.price}
-                </span>
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-4 py-1.5 text-sm font-medium text-green-700">
                   <Clock className="h-3.5 w-3.5" />
                   {service.turnaround}

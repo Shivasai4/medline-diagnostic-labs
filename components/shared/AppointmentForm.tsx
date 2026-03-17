@@ -2,15 +2,44 @@
 
 import { useState, type FormEvent } from "react"
 import { services } from "@/data/services"
+import { getIndianPhoneError, sanitizeIndianPhoneInput } from "@/lib/phone-validation"
 
 export default function AppointmentForm({ preSelectedService }: { preSelectedService?: string }) {
   const [submitted, setSubmitted] = useState(false)
+  const [phone, setPhone] = useState("")
+  const [phoneError, setPhoneError] = useState<string | null>(null)
+  const [phoneTouched, setPhoneTouched] = useState(false)
 
-  const handleSubmit = (e: FormEvent) => {
+  const validatePhone = (value: string, showRequired: boolean) => {
+    if (!showRequired && !value) {
+      return null
+    }
+    return getIndianPhoneError(value)
+  }
+
+  const handlePhoneChange = (rawValue: string) => {
+    const cleanedValue = sanitizeIndianPhoneInput(rawValue)
+    setPhone(cleanedValue)
+    setPhoneError(validatePhone(cleanedValue, phoneTouched))
+  }
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const form = e.currentTarget
+    const nextPhoneError = validatePhone(phone, true)
+
+    setPhoneTouched(true)
+    setPhoneError(nextPhoneError)
+
+    if (nextPhoneError) {
+      return
+    }
+
     setSubmitted(true)
-    const form = e.target as HTMLFormElement
     form.reset()
+    setPhone("")
+    setPhoneError(null)
+    setPhoneTouched(false)
     setTimeout(() => setSubmitted(false), 5000)
   }
 
@@ -34,8 +63,19 @@ export default function AppointmentForm({ preSelectedService }: { preSelectedSer
         type="tel"
         placeholder="Phone Number"
         required
-        className="rounded-lg border border-border px-4 py-2.5 text-sm bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        inputMode="numeric"
+        maxLength={10}
+        value={phone}
+        onChange={(e) => handlePhoneChange(e.target.value)}
+        onBlur={() => {
+          setPhoneTouched(true)
+          setPhoneError(validatePhone(phone, true))
+        }}
+        className={`rounded-lg border px-4 py-2.5 text-sm bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 ${
+          phoneError ? "border-red-400 focus:ring-red-200" : "border-border focus:ring-ring"
+        }`}
       />
+      {phoneError && <p className="text-xs text-red-600">{phoneError}</p>}
       <input
         type="email"
         placeholder="Email (optional)"
@@ -51,7 +91,7 @@ export default function AppointmentForm({ preSelectedService }: { preSelectedSer
         </option>
         {services.map((s) => (
           <option key={s.slug} value={s.slug}>
-            {s.name} — {s.price}
+            {s.name}
           </option>
         ))}
       </select>
@@ -87,3 +127,4 @@ export default function AppointmentForm({ preSelectedService }: { preSelectedSer
     </form>
   )
 }
+

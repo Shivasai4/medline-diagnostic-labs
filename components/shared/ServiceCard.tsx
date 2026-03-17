@@ -18,12 +18,11 @@ export default function ServiceCard({ service }: { service: Service }) {
       </div>
       <h3 className="text-lg font-medium text-primary mb-2">{service.name}</h3>
       <p className="text-sm text-muted-foreground leading-relaxed mb-4">{service.shortDescription}</p>
-      <div className="flex items-center justify-between">
-        <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          {service.price}
-        </span>
+      <div className="flex items-center justify-end">
         <Link
-          href={`/services/${service.slug}`}
+          href={`/book-test?service=${service.slug}`}
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-sm font-medium text-accent hover:text-accent/80 transition-colors"
         >
           Book Now

@@ -23,9 +23,9 @@ export default function AboutSection() {
         </div>
 
         {/* Three cards - MiPath style */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
           {/* Advanced Technology */}
-          <div className="bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:shadow-lg hover:border-primary/30">
+          <div className="bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/30 sm:p-8">
             <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
               <CheckCircle className="h-7 w-7 text-primary" />
             </div>
@@ -43,7 +43,7 @@ export default function AboutSection() {
           </div>
 
           {/* Mission */}
-          <div className="bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:shadow-lg hover:border-primary/30">
+          <div className="bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/30 sm:p-8">
             <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center mb-5">
               <Target className="h-7 w-7 text-accent" />
             </div>
@@ -61,7 +61,7 @@ export default function AboutSection() {
           </div>
 
           {/* Vision */}
-          <div className="bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:shadow-lg hover:border-primary/30">
+          <div className="bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/30 sm:p-8">
             <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
               <Eye className="h-7 w-7 text-primary" />
             </div>

@@ -3,22 +3,50 @@
 import { useState, type FormEvent } from "react"
 import { Phone, Mail, MapPin, Clock, MessageCircle } from "lucide-react"
 import SectionHeading from "@/components/shared/SectionHeading"
+import { getIndianPhoneError, sanitizeIndianPhoneInput } from "@/lib/phone-validation"
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [phone, setPhone] = useState("")
+  const [phoneError, setPhoneError] = useState<string | null>(null)
+  const [phoneTouched, setPhoneTouched] = useState(false)
+
+  const validatePhone = (value: string, showRequired: boolean) => {
+    if (!showRequired && !value) {
+      return null
+    }
+    return getIndianPhoneError(value)
+  }
+
+  const handlePhoneChange = (rawValue: string) => {
+    const cleanedValue = sanitizeIndianPhoneInput(rawValue)
+    setPhone(cleanedValue)
+    setPhoneError(validatePhone(cleanedValue, phoneTouched))
+  }
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = e.currentTarget
     const formData = new FormData(form)
+    const cleanedPhone = sanitizeIndianPhoneInput(String(formData.get("phone") ?? ""))
+    const nextPhoneError = validatePhone(cleanedPhone, true)
+
+    setPhoneTouched(true)
+    setPhone(cleanedPhone)
+    setPhoneError(nextPhoneError)
+
+    if (nextPhoneError) {
+      setError(nextPhoneError)
+      return
+    }
 
     const payload = {
       formType: "contact",
       data: {
         fullName: String(formData.get("fullName") ?? "").trim(),
-        phone: String(formData.get("phone") ?? "").trim(),
+        phone: cleanedPhone,
         email: String(formData.get("email") ?? "").trim(),
         message: String(formData.get("message") ?? "").trim(),
       },
@@ -43,6 +71,9 @@ export default function ContactPage() {
 
       setSubmitted(true)
       form.reset()
+      setPhone("")
+      setPhoneError(null)
+      setPhoneTouched(false)
       window.setTimeout(() => setSubmitted(false), 5000)
     } catch (submitError) {
       const message = submitError instanceof Error ? submitError.message : "Something went wrong."
@@ -85,8 +116,19 @@ export default function ContactPage() {
                 type="tel"
                 placeholder="Phone Number"
                 required
-                className="rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                inputMode="numeric"
+                maxLength={10}
+                value={phone}
+                onChange={(event) => handlePhoneChange(event.target.value)}
+                onBlur={() => {
+                  setPhoneTouched(true)
+                  setPhoneError(validatePhone(phone, true))
+                }}
+                className={`rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring ${
+                  phoneError ? "border-red-400 focus:ring-red-200" : "border-border"
+                }`}
               />
+              {phoneError && <p className="text-xs text-red-600">{phoneError}</p>}
               <input
                 name="email"
                 type="email"

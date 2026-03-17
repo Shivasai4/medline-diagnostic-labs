@@ -45,8 +45,8 @@ export default function TeamSection() {
               key={member.id}
               className="rounded-[20px] border border-primary/15 bg-card/95 p-5 shadow-sm sm:p-6 lg:p-7"
             >
-              <div className="grid items-start gap-6 md:grid-cols-[220px_minmax(0,1fr)] md:gap-8">
-                <div className="relative mx-auto h-[190px] w-[190px] overflow-hidden rounded-[18px] sm:h-[220px] sm:w-[220px] md:mx-0">
+              <div className="grid items-start gap-6 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-8">
+                <div className="relative mx-auto h-[190px] w-[190px] overflow-hidden rounded-[18px] sm:h-[220px] sm:w-[220px] lg:mx-0">
                   <Image
                     src={member.image}
                     alt={member.imageAlt}
@@ -60,10 +60,10 @@ export default function TeamSection() {
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">
                     {member.label}
                   </p>
-                  <h3 className="mt-2 text-3xl font-bold text-primary sm:text-4xl">
+                  <h3 className="mt-2 break-words text-2xl font-bold text-primary sm:text-3xl">
                     {member.name}
                   </h3>
-                  <p className="mt-1 text-base font-medium tracking-wide text-slate-700 sm:text-lg">
+                  <p className="mt-1 break-words text-sm font-medium tracking-wide text-slate-700 sm:text-base">
                     {member.title}
                   </p>
                   <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">

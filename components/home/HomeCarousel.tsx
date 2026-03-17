@@ -20,7 +20,7 @@ const slides = [
     description:
       "Calibration-led workflows, dual verification, and strict QC checkpoints keep every report clinically dependable.",
     highlights: ["Dual-path validation", "Transparent reporting", "Fast turnaround"],
-    image: "/cover.jpg",
+    image: "/quality_you_can_trust.jpg",
     caption: "Precision and consistency in every run.",
     cta: "/contact",
     ctaLabel: "Talk to Us",
@@ -44,7 +44,7 @@ const slides = [
     highlights: ["Expert pathologists", "Clear guidance", "Reliable support"],
     image: "/trusted_clinical_team.jpg",
     caption: "Human care backed by scientific rigor.",
-    cta: "/contact",
+    cta: "/book-test",
     ctaLabel: "Book a Test",
   },
 ]
@@ -81,7 +81,7 @@ export default function HomeCarousel() {
     <section className="relative overflow-hidden pb-16 pt-14 lg:pb-20 lg:pt-16">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto mb-10 max-w-2xl text-center">
-          <h2 className="text-4xl font-bold text-primary sm:text-5xl">Inside MedLine</h2>
+          <h2 className="text-3xl font-bold text-primary sm:text-5xl">Inside MedLine</h2>
           <p className="mt-4 text-lg leading-relaxed text-primary/70">
             A premium snapshot of the systems, people, and quality discipline behind every report.
           </p>
@@ -116,6 +116,8 @@ export default function HomeCarousel() {
                       <div className="mt-8">
                         <Link
                           href={slide.cta}
+                          target={slide.cta === "/book-test" ? "_blank" : undefined}
+                          rel={slide.cta === "/book-test" ? "noopener noreferrer" : undefined}
                           className="inline-flex rounded-xl bg-primary px-8 py-3 text-base font-semibold text-white shadow-[0_14px_28px_-18px_rgba(37,99,235,0.95)] transition hover:bg-primary/90"
                         >
                           {slide.ctaLabel}
@@ -143,8 +145,8 @@ export default function HomeCarousel() {
             ))}
           </CarouselContent>
 
-          <CarouselPrevious className="-left-2 top-[48%] h-11 w-11 rounded-xl border-primary/20 bg-white/95 text-primary backdrop-blur hover:bg-primary hover:text-white sm:-left-4" />
-          <CarouselNext className="-right-2 top-[48%] h-11 w-11 rounded-xl border-primary/20 bg-white/95 text-primary backdrop-blur hover:bg-primary hover:text-white sm:-right-4" />
+          <CarouselPrevious className="-left-1 top-[48%] hidden h-11 w-11 rounded-xl border-primary/20 bg-white/95 text-primary backdrop-blur hover:bg-primary hover:text-white sm:flex lg:-left-4" />
+          <CarouselNext className="-right-1 top-[48%] hidden h-11 w-11 rounded-xl border-primary/20 bg-white/95 text-primary backdrop-blur hover:bg-primary hover:text-white sm:flex lg:-right-4" />
         </Carousel>
 
         <div className="mt-8 flex justify-center gap-3">

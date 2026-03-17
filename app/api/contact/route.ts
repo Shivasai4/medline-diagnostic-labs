@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import nodemailer from "nodemailer"
+import { isValidIndianPhone, sanitizeIndianPhoneInput } from "@/lib/phone-validation"
 
 export const runtime = "nodejs"
 
@@ -114,9 +115,20 @@ export async function POST(request: Request) {
       Object.entries(body?.data ?? {}).map(([key, value]) => [key, sanitizeValue(value)]),
     )
 
+    if (typeof data.phone === "string") {
+      data.phone = sanitizeIndianPhoneInput(data.phone)
+    }
+
     const missing = requiredFieldsByType[formType as FormType].filter((key) => !data[key])
     if (missing.length > 0) {
       return NextResponse.json({ error: "Please fill all required fields." }, { status: 400 })
+    }
+
+    if (data.phone && !isValidIndianPhone(data.phone)) {
+      return NextResponse.json(
+        { error: "Phone number must be 10 digits and start with 6, 7, 8, or 9." },
+        { status: 400 },
+      )
     }
 
     const smtpHost = readEnvAny(["SMTP_HOST", "MAIL_HOST"]) ?? "smtp.gmail.com"
