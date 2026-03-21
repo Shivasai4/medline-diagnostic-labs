@@ -88,62 +88,64 @@ export default function HomeCarousel() {
         </div>
 
         <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
-          <CarouselContent>
-            {slides.map((slide) => (
-              <CarouselItem key={slide.title}>
-                <article className="overflow-hidden rounded-[32px] border border-white/75 bg-[linear-gradient(140deg,rgba(255,255,255,0.95)_0%,rgba(246,250,255,0.97)_100%)] shadow-[0_34px_56px_-40px_rgba(11,42,74,0.85)]">
-                  <div className="grid gap-7 p-6 sm:p-8 lg:grid-cols-[1.06fr_1fr] lg:items-center lg:gap-10 lg:p-10">
-                    <div>
-                      <p className="inline-flex rounded-full border border-primary/20 bg-primary/8 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-primary">
-                        {slide.eyebrow}
-                      </p>
-                      <h3 className="mt-5 text-3xl font-semibold leading-tight text-navy sm:text-4xl">
-                        {slide.title}
-                      </h3>
-                      <p className="mt-4 text-base leading-relaxed text-foreground/80 sm:text-lg">
-                        {slide.description}
-                      </p>
+          <div className="overflow-hidden rounded-[31px]">
+            <CarouselContent className="items-stretch">
+              {slides.map((slide) => (
+                <CarouselItem key={slide.title} className="h-full">
+                  <article className="h-full overflow-hidden rounded-[31px] border border-white/75 bg-[linear-gradient(140deg,rgba(255,255,255,0.95)_0%,rgba(246,250,255,0.97)_100%)] shadow-[0_34px_56px_-40px_rgba(11,42,74,0.85)]">
+                    <div className="grid gap-7 p-6 sm:p-8 lg:grid-cols-[1.06fr_1fr] lg:items-center lg:gap-10 lg:p-10">
+                      <div>
+                        <p className="inline-flex rounded-full border border-primary/20 bg-primary/8 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-primary">
+                          {slide.eyebrow}
+                        </p>
+                        <h3 className="mt-5 text-3xl font-semibold leading-tight text-navy sm:text-4xl">
+                          {slide.title}
+                        </h3>
+                        <p className="mt-4 text-base leading-relaxed text-foreground/80 sm:text-lg">
+                          {slide.description}
+                        </p>
 
-                      <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                        {slide.highlights.map((item) => (
-                          <p key={item} className="inline-flex items-center gap-2 text-sm font-medium text-primary/90">
-                            <CheckCircle2 className="h-4 w-4 text-primary" />
-                            {item}
-                          </p>
-                        ))}
+                        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                          {slide.highlights.map((item) => (
+                            <p key={item} className="inline-flex items-center gap-2 text-sm font-medium text-primary/90">
+                              <CheckCircle2 className="h-4 w-4 text-primary" />
+                              {item}
+                            </p>
+                          ))}
+                        </div>
+
+                        <div className="mt-8">
+                          <Link
+                            href={slide.cta}
+                            target={slide.cta === "/book-test" ? "_blank" : undefined}
+                            rel={slide.cta === "/book-test" ? "noopener noreferrer" : undefined}
+                            className="inline-flex rounded-xl bg-primary px-8 py-3 text-base font-semibold text-white shadow-[0_14px_28px_-18px_rgba(37,99,235,0.95)] transition hover:bg-primary/90"
+                          >
+                            {slide.ctaLabel}
+                          </Link>
+                        </div>
                       </div>
 
-                      <div className="mt-8">
-                        <Link
-                          href={slide.cta}
-                          target={slide.cta === "/book-test" ? "_blank" : undefined}
-                          rel={slide.cta === "/book-test" ? "noopener noreferrer" : undefined}
-                          className="inline-flex rounded-xl bg-primary px-8 py-3 text-base font-semibold text-white shadow-[0_14px_28px_-18px_rgba(37,99,235,0.95)] transition hover:bg-primary/90"
-                        >
-                          {slide.ctaLabel}
-                        </Link>
+                      <div className="relative overflow-hidden rounded-3xl border border-primary/10 bg-white">
+                        <Image
+                          src={slide.image}
+                          alt={slide.title}
+                          width={1200}
+                          height={820}
+                          className="h-[330px] w-full object-cover sm:h-[380px] lg:h-[430px]"
+                          sizes="(max-width: 1024px) 100vw, 45vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-transparent" />
+                        <p className="absolute bottom-4 left-4 right-4 text-sm font-medium text-white sm:text-base">
+                          {slide.caption}
+                        </p>
                       </div>
                     </div>
-
-                    <div className="relative overflow-hidden rounded-3xl border border-primary/10 bg-white">
-                      <Image
-                        src={slide.image}
-                        alt={slide.title}
-                        width={1200}
-                        height={820}
-                        className="h-[330px] w-full object-cover sm:h-[380px] lg:h-[430px]"
-                        sizes="(max-width: 1024px) 100vw, 45vw"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-transparent" />
-                      <p className="absolute bottom-4 left-4 right-4 text-sm font-medium text-white sm:text-base">
-                        {slide.caption}
-                      </p>
-                    </div>
-                  </div>
-                </article>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
+                  </article>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </div>
 
           <CarouselPrevious className="-left-1 top-[48%] hidden h-11 w-11 rounded-xl border-primary/20 bg-white/95 text-primary backdrop-blur hover:bg-primary hover:text-white sm:flex lg:-left-4" />
           <CarouselNext className="-right-1 top-[48%] hidden h-11 w-11 rounded-xl border-primary/20 bg-white/95 text-primary backdrop-blur hover:bg-primary hover:text-white sm:flex lg:-right-4" />
