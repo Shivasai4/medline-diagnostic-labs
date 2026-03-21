@@ -8,9 +8,9 @@ export default async function AnnouncementBar() {
   }
 
   return (
-    <div className="bg-primary text-primary-foreground">
-      <div className="mx-auto max-w-7xl px-4 py-2 text-center text-sm font-medium sm:px-6 lg:px-8">
-        {announcement.message}
+    <div className="announcement-marquee bg-primary text-primary-foreground">
+      <div className="announcement-marquee-track py-2">
+        <p className="announcement-marquee-item text-sm font-semibold">{announcement.message}</p>
       </div>
     </div>
   )

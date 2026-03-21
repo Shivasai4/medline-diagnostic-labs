@@ -3,18 +3,25 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react"
 import SectionHeading from "@/components/shared/SectionHeading"
 import { useSearchParams } from "next/navigation"
+import { ChevronsUpDown } from "lucide-react"
 import {
-  BOOKING_SERVICES,
+  BOOKING_SERVICE_OPTIONS,
   BOOKING_TIME_SLOTS,
   COLLECTION_TYPES,
   INITIAL_BOOKING_FORM_DATA,
+  formatBookingServiceLabel,
+  formatBookingServicePrice,
   getBookingServiceFromSlug,
+  getBookingServicePrice,
   sanitizeBookingFormData,
   validateBookingFormData,
   type BookingFormData,
   type BookingFormField,
 } from "@/lib/booking"
 import { sanitizeIndianPhoneInput } from "@/lib/phone-validation"
+import { Button } from "@/components/ui/button"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 
 export default function BookingRequestForm() {
   const searchParams = useSearchParams()
@@ -25,9 +32,31 @@ export default function BookingRequestForm() {
   const [submitted, setSubmitted] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
   const [queryPrefillApplied, setQueryPrefillApplied] = useState(false)
+  const [serviceSearch, setServiceSearch] = useState("")
+  const [servicePopoverOpen, setServicePopoverOpen] = useState(false)
 
   const cleanedData = useMemo(() => sanitizeBookingFormData(formData), [formData])
   const validationErrors = useMemo(() => validateBookingFormData(cleanedData), [cleanedData])
+  const selectedServicePrice = useMemo(() => getBookingServicePrice(formData.service), [formData.service])
+  const selectedServiceOption = useMemo(
+    () => BOOKING_SERVICE_OPTIONS.find((service) => service.name === formData.service),
+    [formData.service],
+  )
+  const selectedServiceLabel = selectedServiceOption ? formatBookingServiceLabel(selectedServiceOption) : "Select and search a test"
+  const filteredServiceOptions = useMemo(() => {
+    const searchTerm = serviceSearch.trim().toLowerCase()
+
+    if (!searchTerm) {
+      return BOOKING_SERVICE_OPTIONS
+    }
+
+    return BOOKING_SERVICE_OPTIONS.filter(
+      (service) =>
+        service.name.toLowerCase().includes(searchTerm) ||
+        String(service.id).includes(searchTerm) ||
+        String(service.price).includes(searchTerm),
+    )
+  }, [serviceSearch])
 
   const getError = (field: BookingFormField) => {
     if (!submitAttempted && !touched[field]) {
@@ -100,6 +129,7 @@ export default function BookingRequestForm() {
 
       setSubmitted(true)
       setFormData(INITIAL_BOOKING_FORM_DATA)
+      setServiceSearch("")
       setTouched({})
       setSubmitAttempted(false)
       window.setTimeout(() => setSubmitted(false), 5000)
@@ -207,27 +237,68 @@ export default function BookingRequestForm() {
               <label htmlFor="service" className="mb-1.5 block text-sm font-medium text-foreground">
                 Service <span className="text-red-500">*</span>
               </label>
-              <select
-                id="service"
-                name="service"
-                required
-                value={formData.service}
-                onChange={(event) => {
-                  updateField("service", event.target.value)
-                  markTouched("service")
+              <Popover
+                open={servicePopoverOpen}
+                onOpenChange={(open) => {
+                  setServicePopoverOpen(open)
+                  if (!open) {
+                    setServiceSearch("")
+                  }
                 }}
-                onBlur={() => markTouched("service")}
-                className={`w-full rounded-lg border bg-background px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 ${
-                  getError("service") ? "border-red-400 focus:ring-red-200" : "border-input focus:ring-ring"
-                }`}
               >
-                <option value="">Select a test</option>
-                {BOOKING_SERVICES.map((service) => (
-                  <option key={service} value={service}>
-                    {service}
-                  </option>
-                ))}
-              </select>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="service"
+                    type="button"
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={servicePopoverOpen}
+                    onBlur={() => markTouched("service")}
+                    className={`w-full justify-between rounded-lg px-4 py-2.5 text-left text-sm font-normal ${
+                      formData.service ? "text-foreground" : "text-muted-foreground"
+                    } ${getError("service") ? "border-red-400 focus-visible:ring-red-200" : "border-input"}`}
+                  >
+                    <span className="truncate">{selectedServiceLabel}</span>
+                    <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-60" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-[var(--radix-popover-trigger-width)] p-0">
+                  <Command shouldFilter={false}>
+                    <CommandInput
+                      placeholder="Search test name or price"
+                      value={serviceSearch}
+                      onValueChange={setServiceSearch}
+                    />
+                    <CommandList>
+                      <CommandEmpty>No tests found.</CommandEmpty>
+                      <CommandGroup heading={`Showing ${filteredServiceOptions.length} of ${BOOKING_SERVICE_OPTIONS.length} tests`}>
+                        {filteredServiceOptions.map((service) => (
+                          <CommandItem
+                            key={service.id}
+                            value={`${service.name} ${service.price}`}
+                            onSelect={() => {
+                              updateField("service", service.name)
+                              markTouched("service")
+                              setServicePopoverOpen(false)
+                              setServiceSearch("")
+                            }}
+                          >
+                            <div className="flex w-full items-center justify-between gap-3">
+                              <span className="truncate">{service.name}</span>
+                              <span className="shrink-0 text-xs font-semibold text-primary">
+                                {formatBookingServicePrice(service.price)}
+                              </span>
+                            </div>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              {selectedServicePrice !== undefined && (
+                <p className="mt-1 text-xs font-medium text-primary">Selected test price: {formatBookingServicePrice(selectedServicePrice)}</p>
+              )}
               {getError("service") && <p className="mt-1 text-xs text-red-600">{getError("service")}</p>}
             </div>
 

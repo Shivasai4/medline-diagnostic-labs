@@ -79,7 +79,7 @@ export default function Footer() {
               <li className="flex items-center gap-2.5 text-sm text-muted-foreground">
                 <Phone className="h-4 w-4 shrink-0 text-primary" />
                 <a href="tel:+919876543210" className="hover:text-primary transition-colors">
-                  +91-98765 43210
+                  +91-9849860088
                 </a>
               </li>
               <li className="flex items-center gap-2.5 text-sm text-muted-foreground">
@@ -90,7 +90,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2.5 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4 shrink-0 text-primary" />
-                <span>Mon-Sat: 7:00 AM - 8:00 PM</span>
+                <span className="whitespace-nowrap">Mon-Sat: 7:00 AM - 9:00 PM | Sun: 7:00 AM - 6:00 PM</span>
               </li>
             </ul>
           </div>

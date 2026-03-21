@@ -1,22 +1,24 @@
 import { getIndianPhoneError, sanitizeIndianPhoneInput } from "@/lib/phone-validation"
+import organizationServices from "@/data/organization-services.json"
 
-export const BOOKING_SERVICES = [
-  "Complete Blood Test (CBP)",
-  "Thyroid Profile (T3, T4, TSH)",
-  "Diabetes Test (HbA1c, Fasting Sugar)",
-  "Lipid Profile",
-  "Liver Function Test (LFT)",
-  "Kidney Function Test (KFT)",
-  "Vitamin D & B12",
-  "COVID / Viral Tests",
-  "Full Body Checkup Packages",
-] as const
+export type BookingServiceOption = {
+  id: number
+  name: string
+  price: number
+}
+
+export const BOOKING_SERVICE_OPTIONS: BookingServiceOption[] = organizationServices
+  .map((service) => ({
+    id: Number(service.id) || 0,
+    name: String(service.name ?? "").trim(),
+    price: Number(service.price) || 0,
+  }))
+  .filter((service) => service.id > 0 && service.name.length > 0)
 
 export const BOOKING_TIME_SLOTS = ["8:00 AM - 10:00 AM", "10:00 AM - 12:00 PM", "12:00 PM - 2:00 PM"] as const
 
 export const COLLECTION_TYPES = ["Home Collection", "Visit Lab"] as const
 
-export type BookingService = (typeof BOOKING_SERVICES)[number]
 export type BookingTimeSlot = (typeof BOOKING_TIME_SLOTS)[number]
 export type CollectionType = (typeof COLLECTION_TYPES)[number]
 
@@ -49,21 +51,36 @@ export const INITIAL_BOOKING_FORM_DATA: BookingFormData = {
   notes: "",
 }
 
-const BOOKING_SERVICE_BY_SLUG: Record<string, BookingService> = {
-  "complete-blood-count": "Complete Blood Test (CBP)",
+const BOOKING_SERVICE_BY_SLUG: Record<string, string> = {
+  "complete-blood-count": "CBC - Complete Blood Count",
   "thyroid-panel": "Thyroid Profile (T3, T4, TSH)",
-  "hba1c-diabetes": "Diabetes Test (HbA1c, Fasting Sugar)",
+  "hba1c-diabetes": "Glycosylated Hemoglobin (GHb/HBA1c)",
   "lipid-profile": "Lipid Profile",
   "liver-function-test": "Liver Function Test (LFT)",
-  "kidney-function-test": "Kidney Function Test (KFT)",
-  "vitamin-d": "Vitamin D & B12",
-  "vitamin-b12": "Vitamin D & B12",
-  "covid-19-antibody-test": "COVID / Viral Tests",
-  "full-body-checkup": "Full Body Checkup Packages",
+  "kidney-function-test": "Kidney Function Test",
+  "vitamin-d": "25-Hydroxy Vitamin D",
+  "vitamin-b12": "Vitamin B12",
+  "covid-19-antibody-test": "SARS CoV 2 Antibody Total",
+  "full-body-checkup": "Complete Health Check",
 }
 
 export function getBookingServiceFromSlug(slug: string) {
   return BOOKING_SERVICE_BY_SLUG[slug]
+}
+
+const BOOKING_SERVICE_NAME_SET = new Set(BOOKING_SERVICE_OPTIONS.map((service) => service.name))
+const BOOKING_SERVICE_PRICE_MAP = new Map(BOOKING_SERVICE_OPTIONS.map((service) => [service.name, service.price]))
+
+export function getBookingServicePrice(serviceName: string) {
+  return BOOKING_SERVICE_PRICE_MAP.get(serviceName)
+}
+
+export function formatBookingServicePrice(price: number) {
+  return `Rs ${price.toLocaleString("en-IN")}`
+}
+
+export function formatBookingServiceLabel(service: BookingServiceOption) {
+  return `${service.name} - ${formatBookingServicePrice(service.price)}`
 }
 
 export function sanitizeBookingFormData(payload: Partial<Record<BookingFormField, string>>): BookingFormData {
@@ -98,7 +115,7 @@ export function validateBookingFormData(formData: BookingFormData): BookingFormE
 
   if (!formData.service) {
     errors.service = "Please select a service."
-  } else if (!BOOKING_SERVICES.includes(formData.service as BookingService)) {
+  } else if (!BOOKING_SERVICE_NAME_SET.has(formData.service)) {
     errors.service = "Selected service is not valid."
   }
 

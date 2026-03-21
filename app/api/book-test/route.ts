@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server"
 import nodemailer from "nodemailer"
-import { sanitizeBookingFormData, validateBookingFormData, type BookingFormField } from "@/lib/booking"
+import {
+  formatBookingServicePrice,
+  getBookingServicePrice,
+  sanitizeBookingFormData,
+  validateBookingFormData,
+  type BookingFormField,
+} from "@/lib/booking"
 
 export const runtime = "nodejs"
 
@@ -51,11 +57,14 @@ function escapeHtml(value: string) {
 }
 
 function formatRows(data: ReturnType<typeof sanitizeBookingFormData>) {
+  const servicePrice = getBookingServicePrice(data.service)
+
   const rows: Array<{ label: string; value: string }> = [
     { label: "Name", value: data.fullName },
     { label: "Phone Number", value: data.phone },
     { label: "Email", value: data.email || "-" },
     { label: "Service", value: data.service },
+    { label: "Service Price", value: servicePrice !== undefined ? formatBookingServicePrice(servicePrice) : "-" },
     { label: "Date", value: data.date },
     { label: "Time Slot", value: data.timeSlot },
     { label: "Collection Type", value: data.collectionType },
