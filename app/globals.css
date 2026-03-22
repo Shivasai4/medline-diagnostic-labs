@@ -179,7 +179,7 @@
   white-space: nowrap;
   padding-left: 100%;
   will-change: transform;
-  animation: announcement-scroll 14s linear infinite;
+  animation: announcement-scroll 24s linear infinite;
 }
 
 .announcement-marquee-item {

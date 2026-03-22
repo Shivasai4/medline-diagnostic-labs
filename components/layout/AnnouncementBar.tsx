@@ -2,15 +2,20 @@ import { getAnnouncement } from "@/lib/admin-announcement"
 
 export default async function AnnouncementBar() {
   const announcement = await getAnnouncement()
+  const activeOffers = announcement.offers.filter((offer) => offer.isActive && offer.message.trim())
 
-  if (!announcement.isActive || !announcement.message.trim()) {
+  if (!activeOffers.length) {
     return null
   }
 
   return (
     <div className="announcement-marquee bg-primary text-primary-foreground">
       <div className="announcement-marquee-track py-2">
-        <p className="announcement-marquee-item text-sm font-semibold">{announcement.message}</p>
+        {activeOffers.map((offer) => (
+          <p key={offer.id} className="announcement-marquee-item text-sm font-semibold">
+            {offer.message}
+          </p>
+        ))}
       </div>
     </div>
   )

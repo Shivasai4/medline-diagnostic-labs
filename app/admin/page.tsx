@@ -2,15 +2,30 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Megaphone, UserCog, LogOut } from "lucide-react"
+import { Megaphone, UserCog, LogOut, Plus, Trash2 } from "lucide-react"
 
 type Tab = "offers" | "admin"
 
 type AnnouncementResponse = {
+  offers: AnnouncementOffer[]
+}
+
+type AnnouncementOffer = {
+  id: string
   message: string
   isActive: boolean
-  updatedAt: string | null
+  createdAt: string
+  updatedAt: string
   updatedBy: string | null
+}
+
+type OfferPayload = {
+  id?: string
+  message: string
+  isActive: boolean
+  createdAt?: string
+  updatedAt?: string
+  updatedBy?: string | null
 }
 
 const sidebarLinks: { key: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
@@ -27,10 +42,8 @@ export default function AdminPage() {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const [adminEmail, setAdminEmail] = useState("")
 
-  const [announcementMessage, setAnnouncementMessage] = useState("")
-  const [announcementActive, setAnnouncementActive] = useState(false)
-  const [announcementUpdatedAt, setAnnouncementUpdatedAt] = useState<string | null>(null)
-  const [announcementUpdatedBy, setAnnouncementUpdatedBy] = useState<string | null>(null)
+  const [offers, setOffers] = useState<AnnouncementOffer[]>([])
+  const [newOfferMessage, setNewOfferMessage] = useState("")
   const [announcementSaving, setAnnouncementSaving] = useState(false)
   const [announcementNotice, setAnnouncementNotice] = useState<string | null>(null)
 
@@ -45,12 +58,56 @@ export default function AdminPage() {
       }
 
       const data = (await response.json()) as AnnouncementResponse
-      setAnnouncementMessage(data.message ?? "")
-      setAnnouncementActive(Boolean(data.isActive))
-      setAnnouncementUpdatedAt(data.updatedAt)
-      setAnnouncementUpdatedBy(data.updatedBy)
+      setOffers(Array.isArray(data.offers) ? data.offers : [])
     } catch {
       // ignore load errors in UI
+    }
+  }
+
+  const toOfferPayload = (offer: AnnouncementOffer): OfferPayload => ({
+    id: offer.id,
+    message: offer.message,
+    isActive: offer.isActive,
+    createdAt: offer.createdAt,
+    updatedAt: offer.updatedAt,
+    updatedBy: offer.updatedBy,
+  })
+
+  const saveOffers = async (nextOffers: OfferPayload[], successNotice: string) => {
+    setAnnouncementSaving(true)
+    setAnnouncementNotice(null)
+
+    try {
+      const response = await fetch("/api/admin/announcement", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          offers: nextOffers,
+        }),
+      })
+
+      if (response.status === 401) {
+        router.replace("/login")
+        return false
+      }
+
+      if (!response.ok) {
+        const result = (await response.json().catch(() => null)) as { error?: string } | null
+        throw new Error(result?.error ?? "Unable to save offers.")
+      }
+
+      const data = (await response.json()) as AnnouncementResponse
+      setOffers(Array.isArray(data.offers) ? data.offers : [])
+      setAnnouncementNotice(successNotice)
+      return true
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to save offers."
+      setAnnouncementNotice(message)
+      return false
+    } finally {
+      setAnnouncementSaving(false)
     }
   }
 
@@ -141,44 +198,49 @@ export default function AdminPage() {
     router.replace("/login")
   }
 
-  const handleSaveAnnouncement = async () => {
-    setAnnouncementSaving(true)
-    setAnnouncementNotice(null)
-
-    try {
-      const response = await fetch("/api/admin/announcement", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: announcementMessage,
-          isActive: announcementActive,
-        }),
-      })
-
-      if (response.status === 401) {
-        router.replace("/login")
-        return
-      }
-
-      if (!response.ok) {
-        const result = (await response.json().catch(() => null)) as { error?: string } | null
-        throw new Error(result?.error ?? "Unable to save announcement.")
-      }
-
-      const data = (await response.json()) as AnnouncementResponse
-      setAnnouncementMessage(data.message ?? "")
-      setAnnouncementActive(Boolean(data.isActive))
-      setAnnouncementUpdatedAt(data.updatedAt)
-      setAnnouncementUpdatedBy(data.updatedBy)
-      setAnnouncementNotice("Announcement saved successfully.")
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Unable to save announcement."
-      setAnnouncementNotice(message)
-    } finally {
-      setAnnouncementSaving(false)
+  const handleAddOffer = async () => {
+    const message = newOfferMessage.trim()
+    if (!message) {
+      setAnnouncementNotice("Offer message is required.")
+      return
     }
+
+    const didSave = await saveOffers(
+      [...offers.map(toOfferPayload), { message, isActive: true }],
+      "Offer added successfully.",
+    )
+
+    if (didSave) {
+      setNewOfferMessage("")
+    }
+  }
+
+  const handleDeleteOffer = async (offerId: string) => {
+    const shouldDelete = window.confirm("Delete this offer?")
+    if (!shouldDelete) {
+      return
+    }
+
+    await saveOffers(
+      offers.filter((offer) => offer.id !== offerId).map(toOfferPayload),
+      "Offer deleted successfully.",
+    )
+  }
+
+  const handleToggleOffer = async (offerId: string, nextActive: boolean) => {
+    await saveOffers(
+      offers.map((offer) => {
+        if (offer.id !== offerId) {
+          return toOfferPayload(offer)
+        }
+
+        return {
+          ...toOfferPayload(offer),
+          isActive: nextActive,
+        }
+      }),
+      nextActive ? "Offer enabled successfully." : "Offer hidden successfully.",
+    )
   }
 
   if (isCheckingAuth) {
@@ -256,29 +318,29 @@ export default function AdminPage() {
             <h1 className="text-2xl font-semibold text-primary">Offers & Announcements</h1>
             <div className="rounded-xl border border-border bg-card p-6">
               <p className="mb-4 text-sm text-muted-foreground">
-                Publish a website-wide announcement for offers, discounts, or important updates.
+                Add as many offers as you want. Active offers show on the website in the top marquee and home offers cards.
               </p>
 
-              <label className="mb-2 block text-sm font-medium text-foreground">Announcement Message</label>
+              <label className="mb-2 block text-sm font-medium text-foreground">New Offer</label>
               <textarea
-                value={announcementMessage}
-                onChange={(e) => setAnnouncementMessage(e.target.value)}
-                rows={4}
+                value={newOfferMessage}
+                onChange={(e) => setNewOfferMessage(e.target.value)}
+                rows={3}
                 maxLength={500}
                 placeholder="Example: 20% off on Full Body Checkup this weekend."
                 className="w-full resize-none rounded-xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
               />
-              <p className="mt-2 text-xs text-muted-foreground">{announcementMessage.length}/500</p>
-
-              <label className="mt-4 inline-flex items-center gap-2 text-sm text-foreground">
-                <input
-                  type="checkbox"
-                  checked={announcementActive}
-                  onChange={(e) => setAnnouncementActive(e.target.checked)}
-                  className="h-4 w-4"
-                />
-                Show this announcement on website
-              </label>
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <p className="text-xs text-muted-foreground">{newOfferMessage.length}/500</p>
+                <button
+                  onClick={handleAddOffer}
+                  disabled={announcementSaving || !newOfferMessage.trim()}
+                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Plus className="h-4 w-4" />
+                  {announcementSaving ? "Saving..." : "Add Offer"}
+                </button>
+              </div>
 
               {announcementNotice && (
                 <p className="mt-4 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-sm text-primary">
@@ -286,20 +348,55 @@ export default function AdminPage() {
                 </p>
               )}
 
-              {(announcementUpdatedAt || announcementUpdatedBy) && (
-                <p className="mt-3 text-xs text-muted-foreground">
-                  Last updated {announcementUpdatedAt ? new Date(announcementUpdatedAt).toLocaleString() : "-"}
-                  {announcementUpdatedBy ? ` by ${announcementUpdatedBy}` : ""}
-                </p>
-              )}
+              <div className="mt-6 space-y-3">
+                {offers.length === 0 && (
+                  <p className="rounded-lg border border-dashed border-border bg-secondary/50 px-4 py-3 text-sm text-muted-foreground">
+                    No offers added yet.
+                  </p>
+                )}
 
-              <button
-                onClick={handleSaveAnnouncement}
-                disabled={announcementSaving}
-                className="mt-5 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {announcementSaving ? "Saving..." : "Save Announcement"}
-              </button>
+                {offers.map((offer, index) => (
+                  <article key={offer.id} className="rounded-xl border border-border bg-white/90 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.11em] text-primary/70">
+                          Offer {index + 1}
+                        </p>
+                        <p className="mt-1 text-sm font-medium leading-relaxed text-foreground">{offer.message}</p>
+                      </div>
+
+                      <button
+                        onClick={() => handleDeleteOffer(offer.id)}
+                        disabled={announcementSaving}
+                        className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Delete
+                      </button>
+                    </div>
+
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
+                      <label className="inline-flex items-center gap-2 text-xs font-medium text-foreground">
+                        <input
+                          type="checkbox"
+                          checked={offer.isActive}
+                          onChange={(e) => {
+                            void handleToggleOffer(offer.id, e.target.checked)
+                          }}
+                          disabled={announcementSaving}
+                          className="h-4 w-4"
+                        />
+                        Show this offer on website
+                      </label>
+
+                      <p className="text-xs text-muted-foreground">
+                        Updated {offer.updatedAt ? new Date(offer.updatedAt).toLocaleString() : "-"}
+                        {offer.updatedBy ? ` by ${offer.updatedBy}` : ""}
+                      </p>
+                    </div>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
         )}

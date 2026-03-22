@@ -1,5 +1,6 @@
 import HeroSection from "@/components/home/HeroSection"
 import HomeCarousel from "@/components/home/HomeCarousel"
+import OffersCardsSection from "@/components/home/OffersCardsSection"
 import AboutSection from "@/components/home/AboutSection"
 import ServicesSection from "@/components/home/ServicesSection"
 import DepartmentsSection from "@/components/home/DepartmentsSection"
@@ -37,6 +38,7 @@ export default function HomePage() {
       <div className="home-medical-content">
         <HeroSection />
         <HomeCarousel />
+        <OffersCardsSection />
         <AboutSection />
         <ServicesSection />
         <DepartmentsSection />

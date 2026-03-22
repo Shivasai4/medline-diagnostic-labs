@@ -24,7 +24,7 @@ const roles: Record<Role, RoleConfig> = {
     label: "Customer Login",
     title: "Customer Access",
     subtitle: "Book tests and manage appointments.",
-    route: "https://livehealth.solutions/",
+    route: "https://lab18.cloudpathology.io",
   },
   patient: {
     label: "Patient Login",
