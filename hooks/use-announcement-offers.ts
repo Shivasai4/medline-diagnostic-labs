@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react"
 
 export const ANNOUNCEMENT_STORAGE_EVENT_KEY = "medline:announcement-updated-at"
-const ANNOUNCEMENT_POLL_INTERVAL_MS = 60 * 60 * 1000
 
 export type AnnouncementOffer = {
   id: string
@@ -49,9 +48,10 @@ export function useAnnouncementOffers(initialOffers: AnnouncementOffer[]) {
       void refreshOffers()
     }, 0)
 
-    const intervalId = window.setInterval(() => {
-      void refreshOffers()
-    }, ANNOUNCEMENT_POLL_INTERVAL_MS)
+    // Polling disabled intentionally.
+    // const intervalId = window.setInterval(() => {
+    //   void refreshOffers()
+    // }, ANNOUNCEMENT_POLL_INTERVAL_MS)
 
     const handleVisibilityChange = () => {
       if (!document.hidden) {
@@ -75,7 +75,7 @@ export function useAnnouncementOffers(initialOffers: AnnouncementOffer[]) {
 
     return () => {
       window.clearTimeout(initialRefreshTimerId)
-      window.clearInterval(intervalId)
+      // window.clearInterval(intervalId)
       document.removeEventListener("visibilitychange", handleVisibilityChange)
       window.removeEventListener("storage", handleStorage)
       window.removeEventListener("focus", handleWindowFocus)
