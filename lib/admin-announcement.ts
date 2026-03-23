@@ -40,8 +40,8 @@ const announcementFilePath = configuredAnnouncementStorageFile
   : join(process.cwd(), "data", "announcement.json")
 const fallbackAnnouncementFilePath = join(tmpdir(), "medline-announcement.json")
 const announcementKvKey = process.env.ANNOUNCEMENT_KV_KEY ?? "medline:announcement"
-const kvRestApiUrl = process.env.KV_REST_API_URL
-const kvRestApiToken = process.env.KV_REST_API_TOKEN
+const kvRestApiUrl = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL
+const kvRestApiToken = process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN
 
 const hasKvConfig = Boolean(kvRestApiUrl && kvRestApiToken)
 

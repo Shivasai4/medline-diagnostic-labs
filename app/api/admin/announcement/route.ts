@@ -5,9 +5,16 @@ import { revalidatePath } from "next/cache"
 import { type AnnouncementOffer, getAnnouncement, saveAnnouncement } from "@/lib/admin-announcement"
 import { ADMIN_SESSION_COOKIE, verifyAdminSessionValue } from "@/lib/admin-auth"
 
+export const dynamic = "force-dynamic"
+export const revalidate = 0
+
 export async function GET() {
   const announcement = await getAnnouncement()
-  return NextResponse.json(announcement)
+  return NextResponse.json(announcement, {
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+    },
+  })
 }
 
 export async function PUT(request: Request) {

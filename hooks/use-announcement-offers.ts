@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 
 export const ANNOUNCEMENT_STORAGE_EVENT_KEY = "medline:announcement-updated-at"
-const ANNOUNCEMENT_POLL_INTERVAL_MS = 30_000
+const ANNOUNCEMENT_POLL_INTERVAL_MS = 60 * 60 * 1000
 
 export type AnnouncementOffer = {
   id: string
