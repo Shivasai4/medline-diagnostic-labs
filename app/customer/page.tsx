@@ -60,7 +60,7 @@ export default function CustomerPage() {
               <div className="flex flex-col gap-3 text-sm">
                 {[
                   { label: "Name", value: "Priya Sharma" },
-                  { label: "Phone", value: "+91-98765 43210" },
+                  { label: "Phone", value: "+91-9849860088" },
                   { label: "Email", value: "priya.sharma@email.com" },
                   { label: "Address", value: "Flat 302, Green Valley Apartments, Jubilee Hills, Hyderabad" },
                 ].map((item) => (

@@ -21,7 +21,7 @@ export default function CtaSection() {
             Book Appointment
           </Link>
           <a
-            href="tel:+919876543210"
+            href="tel:+919849860088"
             className="flex items-center gap-2 rounded-lg border border-primary/30 px-6 py-3 text-sm font-medium text-primary transition-all duration-200 hover:bg-primary/5 cursor-pointer"
           >
             <Phone className="h-4 w-4" />

@@ -31,11 +31,14 @@ export default function Footer() {
                 { href: "/", label: "Home" },
                 { href: "/services", label: "Services" },
                 { href: "/contact", label: "Contact Us" },
-                { href: "/login", label: "Login / Portal" },
+                { href: "/login", label: "Portal Login" },
+                { href: "/admin-login", label: "Admin Login", newTab: true },
               ].map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
+                    target={link.newTab ? "_blank" : undefined}
+                    rel={link.newTab ? "noopener noreferrer" : undefined}
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.label}
@@ -78,7 +81,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2.5 text-sm text-muted-foreground">
                 <Phone className="h-4 w-4 shrink-0 text-primary" />
-                <a href="tel:+919876543210" className="hover:text-primary transition-colors">
+                <a href="tel:+919849860088" className="hover:text-primary transition-colors">
                   +91-9849860088
                 </a>
               </li>
@@ -88,9 +91,12 @@ export default function Footer() {
                   info@medlinelabs.com
                 </a>
               </li>
-              <li className="flex items-center gap-2.5 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4 shrink-0 text-primary" />
-                <span className="whitespace-nowrap">Mon-Sat: 7:00 AM - 9:00 PM | Sun: 7:00 AM - 6:00 PM</span>
+              <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
+                <div className="flex flex-col">
+                  <span className="whitespace-nowrap">Mon-Sat: 7:00 AM - 9:00 PM</span>
+                  <span className="whitespace-nowrap">Sun: 7:00 AM - 6:00 PM</span>
+                </div>
               </li>
             </ul>
           </div>

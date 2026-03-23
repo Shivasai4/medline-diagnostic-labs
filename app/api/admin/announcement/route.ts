@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { randomUUID } from "node:crypto"
 import { cookies } from "next/headers"
+import { revalidatePath } from "next/cache"
 import { type AnnouncementOffer, getAnnouncement, saveAnnouncement } from "@/lib/admin-announcement"
 import { ADMIN_SESSION_COOKIE, verifyAdminSessionValue } from "@/lib/admin-auth"
 
@@ -81,6 +82,10 @@ export async function PUT(request: Request) {
     const announcement = await saveAnnouncement({
       offers,
     })
+
+    // Ensure updated offers propagate immediately to the homepage and layout marquee.
+    revalidatePath("/")
+    revalidatePath("/", "layout")
 
     return NextResponse.json(announcement)
   } catch {

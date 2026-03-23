@@ -27,7 +27,7 @@ export default function HomePage() {
               addressRegion: "Telangana",
               addressCountry: "IN",
             },
-            telephone: "+91-9876543210",
+            telephone: "+91-9849860088",
             url: "https://medlinelabs.com",
           }),
         }}

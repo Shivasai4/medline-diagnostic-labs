@@ -160,8 +160,8 @@ export default function ContactPage() {
                   <Phone className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                   <div>
                     <p className="text-sm font-medium text-foreground">Phone</p>
-                    <a href="tel:+919876543210" className="text-sm text-muted-foreground transition-colors hover:text-primary">
-                      +91-98765 43210
+                    <a href="tel:+919849860088" className="text-sm text-muted-foreground transition-colors hover:text-primary">
+                      +91-9849860088
                     </a>
                   </div>
                 </div>
@@ -179,12 +179,12 @@ export default function ContactPage() {
                   <div>
                     <p className="text-sm font-medium text-foreground">WhatsApp</p>
                     <a
-                      href="https://wa.me/919876543210"
+                      href="https://wa.me/919849860088"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-sm text-muted-foreground transition-colors hover:text-green-600"
                     >
-                      +91-98765 43210
+                      +91-9849860088
                     </a>
                   </div>
                 </div>

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronsUpDown, Megaphone, UserCog, LogOut, Plus, Trash2 } from "lucide-react"
 import { BOOKING_SERVICE_OPTIONS, formatBookingServicePrice, type BookingServiceOption } from "@/lib/booking"
+import { ANNOUNCEMENT_STORAGE_EVENT_KEY } from "@/hooks/use-announcement-offers"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
@@ -176,6 +177,11 @@ export default function AdminPage() {
       const data = (await response.json()) as AnnouncementResponse
       setOffers(Array.isArray(data.offers) ? data.offers : [])
       setAnnouncementNotice(successNotice)
+      try {
+        window.localStorage.setItem(ANNOUNCEMENT_STORAGE_EVENT_KEY, String(Date.now()))
+      } catch {
+        // ignore storage errors (private mode, disabled storage, etc.)
+      }
       return true
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unable to save offers."

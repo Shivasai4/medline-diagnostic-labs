@@ -129,11 +129,11 @@ export default function ConnectSection() {
               </p>
               <div className="mt-4 flex flex-col gap-2 text-sm">
                 <a
-                  href="tel:+919876543210"
+                  href="tel:+919849860088"
                   className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
                 >
                   <Phone className="h-4 w-4" />
-                  +91-98765 43210
+                  +91-9849860088
                 </a>
                 <a
                   href="mailto:info@medlinelabs.com"
