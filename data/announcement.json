@@ -1,3 +1,30 @@
 {
-  "offers": []
+  "offers": [
+    {
+      "id": "9d8e1c47-a5cf-4184-aad5-32bdd0592a04",
+      "message": "10% off on 17-alpha Hydroxy Progesterone (17 OHP)",
+      "isActive": true,
+      "createdAt": "2026-03-23T14:22:04.948Z",
+      "updatedAt": "2026-03-23T16:33:53.680Z",
+      "updatedBy": "admin@medlinelabs.com",
+      "serviceId": 3,
+      "testName": "17-alpha Hydroxy Progesterone (17 OHP)",
+      "mrp": 1300,
+      "discountPercent": 10,
+      "offerPrice": 1170
+    },
+    {
+      "id": "50feaa3c-3fc5-4495-8e2f-c6f0928d4d6d",
+      "message": "20% off on 25-Hydroxy Vitamin D",
+      "isActive": true,
+      "createdAt": "2026-03-23T16:33:53.680Z",
+      "updatedAt": "2026-03-23T16:33:53.680Z",
+      "updatedBy": "admin@medlinelabs.com",
+      "serviceId": 5,
+      "testName": "25-Hydroxy Vitamin D",
+      "mrp": 1250,
+      "discountPercent": 20,
+      "offerPrice": 1000
+    }
+  ]
 }
