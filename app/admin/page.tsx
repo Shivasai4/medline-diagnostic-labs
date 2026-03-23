@@ -1,8 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Megaphone, UserCog, LogOut, Plus, Trash2 } from "lucide-react"
+import { ChevronsUpDown, Megaphone, UserCog, LogOut, Plus, Trash2 } from "lucide-react"
+import { BOOKING_SERVICE_OPTIONS, formatBookingServicePrice, type BookingServiceOption } from "@/lib/booking"
+import { Button } from "@/components/ui/button"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 
 type Tab = "offers" | "admin"
 
@@ -17,6 +21,11 @@ type AnnouncementOffer = {
   createdAt: string
   updatedAt: string
   updatedBy: string | null
+  serviceId: number | null
+  testName: string | null
+  mrp: number | null
+  discountPercent: number | null
+  offerPrice: number | null
 }
 
 type OfferPayload = {
@@ -26,6 +35,11 @@ type OfferPayload = {
   createdAt?: string
   updatedAt?: string
   updatedBy?: string | null
+  serviceId?: number | null
+  testName?: string | null
+  mrp?: number | null
+  discountPercent?: number | null
+  offerPrice?: number | null
 }
 
 const sidebarLinks: { key: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
@@ -34,6 +48,7 @@ const sidebarLinks: { key: Tab; label: string; icon: React.ComponentType<{ class
 ]
 
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000
+const DISCOUNT_OPTIONS = [5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70] as const
 
 export default function AdminPage() {
   const router = useRouter()
@@ -43,7 +58,11 @@ export default function AdminPage() {
   const [adminEmail, setAdminEmail] = useState("")
 
   const [offers, setOffers] = useState<AnnouncementOffer[]>([])
-  const [newOfferMessage, setNewOfferMessage] = useState("")
+  const [selectedServiceName, setSelectedServiceName] = useState("")
+  const [selectedDiscountPercent, setSelectedDiscountPercent] = useState("")
+  const [offerPriceInput, setOfferPriceInput] = useState("")
+  const [serviceSearch, setServiceSearch] = useState("")
+  const [servicePopoverOpen, setServicePopoverOpen] = useState(false)
   const [announcementSaving, setAnnouncementSaving] = useState(false)
   const [announcementNotice, setAnnouncementNotice] = useState<string | null>(null)
 
@@ -64,6 +83,57 @@ export default function AdminPage() {
     }
   }
 
+  const selectedServiceOption = useMemo(
+    () => BOOKING_SERVICE_OPTIONS.find((service) => service.name === selectedServiceName),
+    [selectedServiceName],
+  )
+
+  const selectedServiceMrp = selectedServiceOption?.price ?? null
+
+  const selectedDiscountValue = useMemo(() => {
+    const value = Number(selectedDiscountPercent)
+    if (!Number.isFinite(value) || value <= 0 || value >= 100) {
+      return null
+    }
+    return Math.round(value)
+  }, [selectedDiscountPercent])
+
+  const calculatedDiscountedPrice = useMemo(() => {
+    if (!selectedServiceMrp || !selectedDiscountValue) {
+      return null
+    }
+
+    return Math.max(1, Math.round(selectedServiceMrp - (selectedServiceMrp * selectedDiscountValue) / 100))
+  }, [selectedDiscountValue, selectedServiceMrp])
+
+  const filteredServiceOptions = useMemo(() => {
+    const searchTerm = serviceSearch.trim().toLowerCase()
+
+    if (!searchTerm) {
+      return BOOKING_SERVICE_OPTIONS
+    }
+
+    return BOOKING_SERVICE_OPTIONS.filter(
+      (service) =>
+        service.name.toLowerCase().includes(searchTerm) ||
+        String(service.id).includes(searchTerm) ||
+        String(service.price).includes(searchTerm),
+    )
+  }, [serviceSearch])
+
+  const selectedServiceLabel = selectedServiceOption
+    ? `${selectedServiceOption.name} - ${formatBookingServicePrice(selectedServiceOption.price)}`
+    : "Select and search a test"
+
+  useEffect(() => {
+    if (calculatedDiscountedPrice === null) {
+      setOfferPriceInput("")
+      return
+    }
+
+    setOfferPriceInput(String(calculatedDiscountedPrice))
+  }, [calculatedDiscountedPrice])
+
   const toOfferPayload = (offer: AnnouncementOffer): OfferPayload => ({
     id: offer.id,
     message: offer.message,
@@ -71,6 +141,11 @@ export default function AdminPage() {
     createdAt: offer.createdAt,
     updatedAt: offer.updatedAt,
     updatedBy: offer.updatedBy,
+    serviceId: offer.serviceId,
+    testName: offer.testName,
+    mrp: offer.mrp,
+    discountPercent: offer.discountPercent,
+    offerPrice: offer.offerPrice,
   })
 
   const saveOffers = async (nextOffers: OfferPayload[], successNotice: string) => {
@@ -199,19 +274,50 @@ export default function AdminPage() {
   }
 
   const handleAddOffer = async () => {
-    const message = newOfferMessage.trim()
-    if (!message) {
-      setAnnouncementNotice("Offer message is required.")
+    if (!selectedServiceOption) {
+      setAnnouncementNotice("Please select a test/service.")
       return
     }
 
+    if (!selectedDiscountValue) {
+      setAnnouncementNotice("Please select a valid discount percentage.")
+      return
+    }
+
+    const offerPrice = Number(offerPriceInput)
+    if (!Number.isFinite(offerPrice) || offerPrice <= 0) {
+      setAnnouncementNotice("Please enter a valid offer price.")
+      return
+    }
+
+    if (offerPrice >= selectedServiceOption.price) {
+      setAnnouncementNotice("Offer price should be less than MRP.")
+      return
+    }
+
+    const message = `${selectedDiscountValue}% off on ${selectedServiceOption.name}`
     const didSave = await saveOffers(
-      [...offers.map(toOfferPayload), { message, isActive: true }],
+      [
+        ...offers.map(toOfferPayload),
+        {
+          message,
+          isActive: true,
+          serviceId: selectedServiceOption.id,
+          testName: selectedServiceOption.name,
+          mrp: selectedServiceOption.price,
+          discountPercent: selectedDiscountValue,
+          offerPrice: Math.round(offerPrice),
+        },
+      ],
       "Offer added successfully.",
     )
 
     if (didSave) {
-      setNewOfferMessage("")
+      setSelectedServiceName("")
+      setSelectedDiscountPercent("")
+      setOfferPriceInput("")
+      setServiceSearch("")
+      setServicePopoverOpen(false)
     }
   }
 
@@ -321,20 +427,123 @@ export default function AdminPage() {
                 Add as many offers as you want. Active offers show on the website in the top marquee and home offers cards.
               </p>
 
-              <label className="mb-2 block text-sm font-medium text-foreground">New Offer</label>
-              <textarea
-                value={newOfferMessage}
-                onChange={(e) => setNewOfferMessage(e.target.value)}
-                rows={3}
-                maxLength={500}
-                placeholder="Example: 20% off on Full Body Checkup this weekend."
-                className="w-full resize-none rounded-xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
-              />
-              <div className="mt-2 flex items-center justify-between gap-3">
-                <p className="text-xs text-muted-foreground">{newOfferMessage.length}/500</p>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="md:col-span-2">
+                  <label className="mb-2 block text-sm font-medium text-foreground">
+                    Select Test/Service
+                  </label>
+                  <Popover
+                    open={servicePopoverOpen}
+                    onOpenChange={(open) => {
+                      setServicePopoverOpen(open)
+                      if (!open) {
+                        setServiceSearch("")
+                      }
+                    }}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={servicePopoverOpen}
+                        className="w-full justify-between rounded-lg px-4 py-2.5 text-left text-sm font-normal"
+                      >
+                        <span className="truncate">{selectedServiceLabel}</span>
+                        <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-60" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent align="start" className="w-[var(--radix-popover-trigger-width)] p-0">
+                      <Command shouldFilter={false}>
+                        <CommandInput
+                          placeholder="Search test name or price"
+                          value={serviceSearch}
+                          onValueChange={setServiceSearch}
+                        />
+                        <CommandList>
+                          <CommandEmpty>No tests found.</CommandEmpty>
+                          <CommandGroup heading={`Showing ${filteredServiceOptions.length} of ${BOOKING_SERVICE_OPTIONS.length} tests`}>
+                            {filteredServiceOptions.map((service: BookingServiceOption) => (
+                              <CommandItem
+                                key={service.id}
+                                value={`${service.name} ${service.price}`}
+                                onSelect={() => {
+                                  setSelectedServiceName(service.name)
+                                  setServicePopoverOpen(false)
+                                  setServiceSearch("")
+                                }}
+                              >
+                                <div className="flex w-full items-center justify-between gap-3">
+                                  <span className="truncate">{service.name}</span>
+                                  <span className="shrink-0 text-xs font-semibold text-primary">
+                                    {formatBookingServicePrice(service.price)}
+                                  </span>
+                                </div>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-foreground">MRP (auto)</label>
+                  <input
+                    type="text"
+                    readOnly
+                    value={selectedServiceMrp ? formatBookingServicePrice(selectedServiceMrp) : ""}
+                    placeholder="Select a test first"
+                    className="w-full rounded-xl border border-primary/15 bg-secondary px-4 py-2.5 text-sm text-foreground"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-foreground">Discount %</label>
+                  <select
+                    value={selectedDiscountPercent}
+                    onChange={(e) => setSelectedDiscountPercent(e.target.value)}
+                    className="w-full rounded-xl border border-primary/15 bg-white px-4 py-2.5 text-sm text-foreground focus:border-primary focus:outline-none"
+                  >
+                    <option value="">Select discount</option>
+                    {DISCOUNT_OPTIONS.map((value) => (
+                      <option key={value} value={value}>
+                        {value}%
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-foreground">Calculated Price</label>
+                  <input
+                    type="text"
+                    readOnly
+                    value={calculatedDiscountedPrice ? formatBookingServicePrice(calculatedDiscountedPrice) : ""}
+                    placeholder="Select discount to auto-calculate"
+                    className="w-full rounded-xl border border-primary/15 bg-secondary px-4 py-2.5 text-sm text-foreground"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-foreground">Offer Price</label>
+                  <input
+                    type="number"
+                    min={1}
+                    step={1}
+                    value={offerPriceInput}
+                    onChange={(e) => setOfferPriceInput(e.target.value)}
+                    placeholder="Enter final offer price"
+                    className="w-full rounded-xl border border-primary/15 bg-white px-4 py-2.5 text-sm text-foreground focus:border-primary focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center justify-end">
                 <button
                   onClick={handleAddOffer}
-                  disabled={announcementSaving || !newOfferMessage.trim()}
+                  disabled={announcementSaving || !selectedServiceName || !selectedDiscountPercent || !offerPriceInput}
                   className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <Plus className="h-4 w-4" />
@@ -355,47 +564,72 @@ export default function AdminPage() {
                   </p>
                 )}
 
-                {offers.map((offer, index) => (
-                  <article key={offer.id} className="rounded-xl border border-border bg-white/90 p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.11em] text-primary/70">
-                          Offer {index + 1}
-                        </p>
-                        <p className="mt-1 text-sm font-medium leading-relaxed text-foreground">{offer.message}</p>
+                {offers.map((offer, index) => {
+                  const hasStructuredPricing =
+                    Boolean(offer.testName) &&
+                    Boolean(offer.mrp) &&
+                    Boolean(offer.offerPrice) &&
+                    Boolean(offer.discountPercent)
+
+                  return (
+                    <article key={offer.id} className="rounded-xl border border-border bg-white/90 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-[0.11em] text-primary/70">
+                            Offer {index + 1}
+                          </p>
+                          {hasStructuredPricing ? (
+                            <>
+                              <p className="mt-1 text-sm font-semibold leading-relaxed text-foreground">{offer.testName}</p>
+                              <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
+                                <span className="text-muted-foreground line-through">
+                                  {formatBookingServicePrice(Number(offer.mrp))}
+                                </span>
+                                <span className="rounded-full bg-green-50 px-2 py-0.5 font-semibold text-green-700">
+                                  {offer.discountPercent}% OFF
+                                </span>
+                                <span className="font-semibold text-primary">
+                                  {formatBookingServicePrice(Number(offer.offerPrice))}
+                                </span>
+                              </div>
+                            </>
+                          ) : (
+                            <p className="mt-1 text-sm font-medium leading-relaxed text-foreground">{offer.message}</p>
+                          )}
+                        </div>
+
+                        <button
+                          onClick={() => handleDeleteOffer(offer.id)}
+                          disabled={announcementSaving}
+                          className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          Delete
+                        </button>
                       </div>
 
-                      <button
-                        onClick={() => handleDeleteOffer(offer.id)}
-                        disabled={announcementSaving}
-                        className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        Delete
-                      </button>
-                    </div>
+                      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
+                        <label className="inline-flex items-center gap-2 text-xs font-medium text-foreground">
+                          <input
+                            type="checkbox"
+                            checked={offer.isActive}
+                            onChange={(e) => {
+                              void handleToggleOffer(offer.id, e.target.checked)
+                            }}
+                            disabled={announcementSaving}
+                            className="h-4 w-4"
+                          />
+                          Show this offer on website
+                        </label>
 
-                    <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
-                      <label className="inline-flex items-center gap-2 text-xs font-medium text-foreground">
-                        <input
-                          type="checkbox"
-                          checked={offer.isActive}
-                          onChange={(e) => {
-                            void handleToggleOffer(offer.id, e.target.checked)
-                          }}
-                          disabled={announcementSaving}
-                          className="h-4 w-4"
-                        />
-                        Show this offer on website
-                      </label>
-
-                      <p className="text-xs text-muted-foreground">
-                        Updated {offer.updatedAt ? new Date(offer.updatedAt).toLocaleString() : "-"}
-                        {offer.updatedBy ? ` by ${offer.updatedBy}` : ""}
-                      </p>
-                    </div>
-                  </article>
-                ))}
+                        <p className="text-xs text-muted-foreground">
+                          Updated {offer.updatedAt ? new Date(offer.updatedAt).toLocaleString() : "-"}
+                          {offer.updatedBy ? ` by ${offer.updatedBy}` : ""}
+                        </p>
+                      </div>
+                    </article>
+                  )
+                })}
               </div>
             </div>
           </div>

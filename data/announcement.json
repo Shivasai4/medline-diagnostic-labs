@@ -1,20 +1,17 @@
 {
   "offers": [
     {
-      "id": "60bbc107-d5c3-4cd6-ad89-c4de0b1c634f",
-      "message": "30% on other tests",
+      "id": "e573f82d-bc58-46c0-a5be-2adac355fafc",
+      "message": "5% off on Anti Cardiolipin Profile (IgA, IgG, IgM) - ACLA",
       "isActive": true,
-      "createdAt": "2026-03-22T06:10:06.540Z",
-      "updatedAt": "2026-03-22T06:16:53.497Z",
-      "updatedBy": "admin@medlinelabs.com"
-    },
-    {
-      "id": "f32d255f-15f3-40d4-a269-5fe18cac0c99",
-      "message": "70% off on other tests",
-      "isActive": true,
-      "createdAt": "2026-03-22T06:16:53.497Z",
-      "updatedAt": "2026-03-22T06:16:53.497Z",
-      "updatedBy": "admin@medlinelabs.com"
+      "createdAt": "2026-03-22T18:35:58.151Z",
+      "updatedAt": "2026-03-23T06:07:56.666Z",
+      "updatedBy": "admin@medlinelabs.com",
+      "serviceId": 44,
+      "testName": "Anti Cardiolipin Profile (IgA, IgG, IgM) - ACLA",
+      "mrp": 950,
+      "discountPercent": 5,
+      "offerPrice": 903
     }
   ]
 }

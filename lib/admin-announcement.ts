@@ -9,6 +9,11 @@ export type AnnouncementOffer = {
   createdAt: string
   updatedAt: string
   updatedBy: string | null
+  serviceId: number | null
+  testName: string | null
+  mrp: number | null
+  discountPercent: number | null
+  offerPrice: number | null
 }
 
 export type AnnouncementData = {
@@ -29,7 +34,38 @@ const DEFAULT_ANNOUNCEMENT: AnnouncementData = {
 const announcementFilePath = join(process.cwd(), "data", "announcement.json")
 
 function normalizeOffer(rawOffer: Partial<AnnouncementOffer>): AnnouncementOffer | null {
-  const message = String(rawOffer.message ?? "").trim().slice(0, 500)
+  const testName = String(rawOffer.testName ?? "").trim().slice(0, 200) || null
+
+  const normalizeMoney = (value: unknown) => {
+    const next = Number(value)
+    if (!Number.isFinite(next) || next <= 0) {
+      return null
+    }
+    return Math.round(next)
+  }
+
+  const normalizeDiscountPercent = (value: unknown) => {
+    const next = Number(value)
+    if (!Number.isFinite(next) || next <= 0 || next >= 100) {
+      return null
+    }
+    return Math.round(next)
+  }
+
+  const mrp = normalizeMoney(rawOffer.mrp)
+  const offerPrice = normalizeMoney(rawOffer.offerPrice)
+  const discountPercent = normalizeDiscountPercent(rawOffer.discountPercent)
+  const serviceIdValue = Number(rawOffer.serviceId)
+  const serviceId = Number.isFinite(serviceIdValue) && serviceIdValue > 0 ? Math.round(serviceIdValue) : null
+
+  const fallbackMessage =
+    testName && discountPercent
+      ? `${discountPercent}% off on ${testName}`
+      : testName
+        ? `Special offer on ${testName}`
+        : ""
+
+  const message = (String(rawOffer.message ?? "").trim().slice(0, 500) || fallbackMessage).trim()
 
   if (!message) {
     return null
@@ -50,6 +86,11 @@ function normalizeOffer(rawOffer: Partial<AnnouncementOffer>): AnnouncementOffer
     createdAt,
     updatedAt,
     updatedBy: rawOffer.updatedBy ?? null,
+    serviceId,
+    testName,
+    mrp,
+    discountPercent,
+    offerPrice,
   }
 }
 
@@ -70,6 +111,11 @@ function fromLegacyAnnouncement(rawAnnouncement: LegacyAnnouncementData): Announ
         createdAt: fallbackUpdatedAt,
         updatedAt: fallbackUpdatedAt,
         updatedBy: rawAnnouncement.updatedBy ?? null,
+        serviceId: null,
+        testName: null,
+        mrp: null,
+        discountPercent: null,
+        offerPrice: null,
       },
     ],
   }

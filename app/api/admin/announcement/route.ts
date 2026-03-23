@@ -26,19 +26,56 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Offers payload must be an array." }, { status: 400 })
     }
 
+    const normalizeMoney = (value: unknown) => {
+      const next = Number(value)
+      if (!Number.isFinite(next) || next <= 0) {
+        return null
+      }
+      return Math.round(next)
+    }
+
+    const normalizeDiscountPercent = (value: unknown) => {
+      const next = Number(value)
+      if (!Number.isFinite(next) || next <= 0 || next >= 100) {
+        return null
+      }
+      return Math.round(next)
+    }
+
     const now = new Date().toISOString()
     const offers = body.offers
-      .map((rawOffer) => ({
-        id: typeof rawOffer.id === "string" && rawOffer.id ? rawOffer.id : randomUUID(),
-        message: String(rawOffer.message ?? "").trim().slice(0, 500),
-        isActive: Boolean(rawOffer.isActive),
-        createdAt:
-          typeof rawOffer.createdAt === "string" && rawOffer.createdAt
-            ? rawOffer.createdAt
-            : now,
-        updatedAt: now,
-        updatedBy: session.email,
-      }))
+      .map((rawOffer) => {
+        const testName = String(rawOffer.testName ?? "").trim().slice(0, 200) || null
+        const mrp = normalizeMoney(rawOffer.mrp)
+        const discountPercent = normalizeDiscountPercent(rawOffer.discountPercent)
+        const offerPrice = normalizeMoney(rawOffer.offerPrice)
+        const serviceIdValue = Number(rawOffer.serviceId)
+        const serviceId = Number.isFinite(serviceIdValue) && serviceIdValue > 0 ? Math.round(serviceIdValue) : null
+        const fallbackMessage =
+          testName && discountPercent
+            ? `${discountPercent}% off on ${testName}`
+            : testName
+              ? `Special offer on ${testName}`
+              : ""
+        const message = (String(rawOffer.message ?? "").trim().slice(0, 500) || fallbackMessage).trim()
+
+        return {
+          id: typeof rawOffer.id === "string" && rawOffer.id ? rawOffer.id : randomUUID(),
+          message,
+          isActive: Boolean(rawOffer.isActive),
+          createdAt:
+            typeof rawOffer.createdAt === "string" && rawOffer.createdAt
+              ? rawOffer.createdAt
+              : now,
+          updatedAt: now,
+          updatedBy: session.email,
+          serviceId,
+          testName,
+          mrp,
+          discountPercent,
+          offerPrice,
+        }
+      })
       .filter((offer) => offer.message.length > 0)
 
     const announcement = await saveAnnouncement({
