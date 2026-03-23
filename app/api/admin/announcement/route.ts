@@ -88,7 +88,8 @@ export async function PUT(request: Request) {
     revalidatePath("/", "layout")
 
     return NextResponse.json(announcement)
-  } catch {
+  } catch (error) {
+    console.error("Unable to save announcement.", error)
     return NextResponse.json({ error: "Unable to save announcement." }, { status: 500 })
   }
 }

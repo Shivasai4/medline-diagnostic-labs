@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto"
 import { mkdir, readFile, writeFile } from "node:fs/promises"
-import { join } from "node:path"
+import { tmpdir } from "node:os"
+import { dirname, isAbsolute, join, resolve } from "node:path"
 
 export type AnnouncementOffer = {
   id: string
@@ -31,7 +32,41 @@ const DEFAULT_ANNOUNCEMENT: AnnouncementData = {
   offers: [],
 }
 
-const announcementFilePath = join(process.cwd(), "data", "announcement.json")
+const configuredAnnouncementStorageFile = process.env.ANNOUNCEMENT_STORAGE_FILE?.trim()
+const announcementFilePath = configuredAnnouncementStorageFile
+  ? isAbsolute(configuredAnnouncementStorageFile)
+    ? configuredAnnouncementStorageFile
+    : resolve(process.cwd(), configuredAnnouncementStorageFile)
+  : join(process.cwd(), "data", "announcement.json")
+const fallbackAnnouncementFilePath = join(tmpdir(), "medline-announcement.json")
+const announcementKvKey = process.env.ANNOUNCEMENT_KV_KEY ?? "medline:announcement"
+const kvRestApiUrl = process.env.KV_REST_API_URL
+const kvRestApiToken = process.env.KV_REST_API_TOKEN
+
+const hasKvConfig = Boolean(kvRestApiUrl && kvRestApiToken)
+
+async function runKvCommand(command: string[]) {
+  if (!hasKvConfig) {
+    return null
+  }
+
+  const response = await fetch(kvRestApiUrl as string, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${kvRestApiToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(command),
+    cache: "no-store",
+  })
+
+  if (!response.ok) {
+    throw new Error(`KV command failed with status ${response.status}`)
+  }
+
+  const payload = (await response.json()) as { result?: unknown }
+  return payload.result ?? null
+}
 
 function normalizeOffer(rawOffer: Partial<AnnouncementOffer>): AnnouncementOffer | null {
   const testName = String(rawOffer.testName ?? "").trim().slice(0, 200) || null
@@ -121,28 +156,82 @@ function fromLegacyAnnouncement(rawAnnouncement: LegacyAnnouncementData): Announ
   }
 }
 
-export async function getAnnouncement() {
-  try {
-    const file = await readFile(announcementFilePath, "utf8")
-    const parsed = JSON.parse(file) as Partial<AnnouncementData> & LegacyAnnouncementData
-
-    if (Array.isArray(parsed.offers)) {
-      return {
-        offers: parsed.offers
-          .map((offer) => normalizeOffer(offer))
-          .filter((offer): offer is AnnouncementOffer => Boolean(offer)),
-      }
+function toAnnouncementData(parsed: Partial<AnnouncementData> & LegacyAnnouncementData): AnnouncementData {
+  if (Array.isArray(parsed.offers)) {
+    return {
+      offers: parsed.offers
+        .map((offer) => normalizeOffer(offer))
+        .filter((offer): offer is AnnouncementOffer => Boolean(offer)),
     }
+  }
 
-    return fromLegacyAnnouncement(parsed)
+  return fromLegacyAnnouncement(parsed)
+}
+
+async function readAnnouncementFromFile(filePath: string) {
+  try {
+    const file = await readFile(filePath, "utf8")
+    const parsed = JSON.parse(file) as Partial<AnnouncementData> & LegacyAnnouncementData
+    return toAnnouncementData(parsed)
   } catch {
-    return DEFAULT_ANNOUNCEMENT
+    return null
   }
 }
 
+async function writeAnnouncementToFile(filePath: string, nextAnnouncement: AnnouncementData) {
+  await mkdir(dirname(filePath), { recursive: true })
+  await writeFile(filePath, `${JSON.stringify(nextAnnouncement, null, 2)}\n`, "utf8")
+}
+
+export async function getAnnouncement() {
+  if (hasKvConfig) {
+    try {
+      const rawFromKv = await runKvCommand(["GET", announcementKvKey])
+      if (typeof rawFromKv === "string" && rawFromKv.trim()) {
+        const parsedFromKv = JSON.parse(rawFromKv) as Partial<AnnouncementData> & LegacyAnnouncementData
+        return toAnnouncementData(parsedFromKv)
+      }
+    } catch (error) {
+      console.error("Unable to read announcement from KV. Falling back to file storage.", error)
+    }
+  }
+
+  const primaryAnnouncement = await readAnnouncementFromFile(announcementFilePath)
+  if (primaryAnnouncement) {
+    return primaryAnnouncement
+  }
+
+  if (fallbackAnnouncementFilePath !== announcementFilePath) {
+    const fallbackAnnouncement = await readAnnouncementFromFile(fallbackAnnouncementFilePath)
+    if (fallbackAnnouncement) {
+      return fallbackAnnouncement
+    }
+  }
+
+  return DEFAULT_ANNOUNCEMENT
+}
+
 export async function saveAnnouncement(nextAnnouncement: AnnouncementData) {
-  await mkdir(join(process.cwd(), "data"), { recursive: true })
-  await writeFile(announcementFilePath, `${JSON.stringify(nextAnnouncement, null, 2)}\n`, "utf8")
+  if (hasKvConfig) {
+    await runKvCommand(["SET", announcementKvKey, JSON.stringify(nextAnnouncement)])
+    return nextAnnouncement
+  }
+
+  try {
+    await writeAnnouncementToFile(announcementFilePath, nextAnnouncement)
+    return nextAnnouncement
+  } catch (error) {
+    console.error("Unable to write announcement to primary file storage.", error)
+
+    if (fallbackAnnouncementFilePath === announcementFilePath) {
+      throw error
+    }
+
+    await writeAnnouncementToFile(fallbackAnnouncementFilePath, nextAnnouncement)
+    console.warn(
+      "Announcement saved to temporary storage. Configure ANNOUNCEMENT_STORAGE_FILE or KV for persistent cross-restart storage.",
+    )
+  }
 
   return nextAnnouncement
 }
