@@ -87,8 +87,8 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2.5 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4 shrink-0 text-primary" />
-                <a href="mailto:info@medlinelabs.com" className="hover:text-primary transition-colors">
-                  info@medlinelabs.com
+                <a href="mailto:medlinelabs2014@gmail.com" className="hover:text-primary transition-colors">
+                  medlinelabs2014@gmail.com
                 </a>
               </li>
               <li className="flex items-start gap-2.5 text-sm text-muted-foreground">

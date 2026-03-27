@@ -169,8 +169,8 @@ export default function ContactPage() {
                   <Mail className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                   <div>
                     <p className="text-sm font-medium text-foreground">Email</p>
-                    <a href="mailto:info@medlinelabs.com" className="text-sm text-muted-foreground transition-colors hover:text-primary">
-                      info@medlinelabs.com
+                    <a href="mailto:medlinelabs2014@gmail.com" className="text-sm text-muted-foreground transition-colors hover:text-primary">
+                      medlinelabs2014@gmail.com
                     </a>
                   </div>
                 </div>

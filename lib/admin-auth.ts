@@ -3,7 +3,7 @@ import { createHmac, timingSafeEqual } from "node:crypto"
 export const ADMIN_SESSION_COOKIE = "medline_admin_session"
 
 const SESSION_TTL_SECONDS = 60 * 30
-const DEFAULT_ADMIN_EMAIL = "admin@medlinelabs.com"
+const DEFAULT_ADMIN_EMAIL = "medlinelabs2014@gmail.com"
 const DEFAULT_ADMIN_PASSWORD = "Admin@123"
 
 export type AdminSession = {

@@ -14,7 +14,7 @@ type BookingRequestBody = {
   data?: Partial<Record<BookingFormField, string>>
 }
 
-const DEFAULT_RECEIVER_EMAIL = "ganjishivasai4@gmail.com"
+const DEFAULT_RECEIVER_EMAIL = "medlinelabs2014@gmail.com"
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function readEnv(name: string) {

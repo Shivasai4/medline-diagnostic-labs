@@ -136,11 +136,11 @@ export default function ConnectSection() {
                   +91-9849860088
                 </a>
                 <a
-                  href="mailto:info@medlinelabs.com"
+                  href="mailto:medlinelabs2014@gmail.com"
                   className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
                 >
                   <Mail className="h-4 w-4" />
-                  info@medlinelabs.com
+                  medlinelabs2014@gmail.com
                 </a>
               </div>
             </div>
@@ -297,15 +297,15 @@ export default function ConnectSection() {
             <p className="mb-6 mt-1 text-sm text-muted-foreground">
               Send your resume to{" "}
               <a
-                href="mailto:info@medlinelabs.com"
+                href="mailto:medlinelabs2014@gmail.com"
                 className="font-medium text-primary transition-colors hover:text-primary/80"
               >
-                info@medlinelabs.com
+                medlinelabs2014@gmail.com
               </a>
               .
             </p>
             <a
-              href="mailto:info@medlinelabs.com?subject=Resume%20Submission%20-%20MedLine%20Diagnostic%20Labs"
+              href="mailto:medlinelabs2014@gmail.com?subject=Resume%20Submission%20-%20MedLine%20Diagnostic%20Labs"
               className="inline-flex w-full items-center justify-center rounded-lg bg-accent px-6 py-2.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
             >
               Send Resume by Email

@@ -11,7 +11,7 @@ type ContactPayload = {
   data: Record<string, string>
 }
 
-const DEFAULT_RECEIVER_EMAIL = "ganjishivasai4@gmail.com"
+const DEFAULT_RECEIVER_EMAIL = "medlinelabs2014@gmail.com"
 
 const requiredFieldsByType: Record<FormType, string[]> = {
   contact: ["fullName", "phone", "message"],
