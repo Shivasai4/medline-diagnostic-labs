@@ -5,6 +5,8 @@ import AppointmentForm from "@/components/shared/AppointmentForm"
 import { CheckCircle, Clock, ChevronRight } from "lucide-react"
 import type { Metadata } from "next"
 
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://medlinelabs.com").replace(/\/+$/, "")
+
 export async function generateStaticParams() {
   return services.map((service) => ({ slug: service.slug }))
 }
@@ -20,6 +22,16 @@ export async function generateMetadata({
   return {
     title: `${service.name} | MedLine Diagnostic Labs`,
     description: service.overview,
+    alternates: {
+      canonical: `/services/${service.slug}`,
+    },
+    openGraph: {
+      title: `${service.name} | Medline Diagnostic Labs`,
+      description: service.overview,
+      url: `${siteUrl}/services/${service.slug}`,
+      type: "article",
+      images: ["/cover.jpg"],
+    },
   }
 }
 

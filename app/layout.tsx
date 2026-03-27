@@ -8,18 +8,60 @@ import Footer from "@/components/layout/Footer"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-display" })
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://medlinelabs.com").replace(/\/+$/, "")
+const siteTitle = "Medline Diagnostic Labs | Leading To Better Health | Hyderabad"
+const siteDescription =
+  "Medline Diagnostic Labs is a NABL-accredited diagnostic laboratory in Hyderabad. Book blood tests, full body checkups, and home sample collection with fast report turnaround."
 
 export const metadata: Metadata = {
-  title: "MedLine Diagnostic Labs | Leading To Better Health | Hyderabad",
-  description:
-    "NABL-accredited diagnostic lab in Hyderabad. Book blood tests, full body checkups, home sample collection. Fast reports in 24 hours.",
-  keywords:
-    "diagnostic lab hyderabad, blood test hyderabad, home sample collection, nabl lab hyderabad, full body checkup hyderabad",
-  openGraph: {
-    title: "MedLine Diagnostic Labs",
-    description: "Leading To Better Health - Hyderabad's trusted diagnostic partner.",
-    type: "website",
+  metadataBase: new URL(siteUrl),
+  title: siteTitle,
+  description: siteDescription,
+  applicationName: "Medline Diagnostic Labs",
+  keywords: [
+    "medline diagnostic",
+    "medline diagnostic labs",
+    "medline diagnostics",
+    "diagnostic lab hyderabad",
+    "blood test hyderabad",
+    "home sample collection hyderabad",
+    "nabl lab hyderabad",
+    "full body checkup hyderabad",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      maxSnippet: -1,
+      maxImagePreview: "large",
+      maxVideoPreview: -1,
+    },
   },
+  openGraph: {
+    title: siteTitle,
+    description: siteDescription,
+    url: siteUrl,
+    siteName: "Medline Diagnostic Labs",
+    locale: "en_IN",
+    type: "website",
+    images: [
+      {
+        url: "/cover.jpg",
+        width: 1200,
+        height: 820,
+        alt: "Medline Diagnostic Labs",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteTitle,
+    description: siteDescription,
+    images: ["/cover.jpg"],
+  },
+  category: "healthcare",
 }
 
 export default function RootLayout({

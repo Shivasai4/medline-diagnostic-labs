@@ -10,8 +10,8 @@ export default function HeroSection() {
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
           <div>
             <h1 className="font-serif text-[34px] font-semibold leading-[1.08] tracking-tight text-primary sm:text-5xl lg:text-[64px]">
-              Accurate Reports.
-              <span className="mt-1 block text-navy">Faster Clinical Action.</span>
+              Medline Diagnostic Labs
+              <span className="mt-1 block text-navy">Accurate Reports. Faster Clinical Action.</span>
             </h1>
 
             <p className="mt-7 max-w-xl text-base leading-[1.85] text-foreground/85 sm:text-lg">
