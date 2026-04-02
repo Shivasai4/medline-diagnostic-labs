@@ -8,7 +8,7 @@ import Footer from "@/components/layout/Footer"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-display" })
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://medlinelabs.com").replace(/\/+$/, "")
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://medlinediagnosticlabs.com").replace(/\/+$/, "")
 const siteTitle = "Medline Diagnostic Labs | Leading To Better Health | Hyderabad"
 const siteDescription =
   "Medline Diagnostic Labs is a NABL-accredited diagnostic laboratory in Hyderabad. Book blood tests, full body checkups, and home sample collection with fast report turnaround."
@@ -62,8 +62,12 @@ export const metadata: Metadata = {
     images: ["/cover.jpg"],
   },
   icons: {
-    icon: [{ url: "/favicon.ico", type: "image/x-icon" }],
-    shortcut: ["/favicon.ico"],
+    icon: [
+      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
+      { url: "/favicon.ico", type: "image/x-icon" },
+    ],
+    shortcut: ["/favicon-48x48.png"],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   category: "healthcare",
 }
