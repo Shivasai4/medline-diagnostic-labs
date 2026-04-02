@@ -61,6 +61,10 @@ export const metadata: Metadata = {
     description: siteDescription,
     images: ["/cover.jpg"],
   },
+  icons: {
+    icon: [{ url: "/favicon.ico", type: "image/x-icon" }],
+    shortcut: ["/favicon.ico"],
+  },
   category: "healthcare",
 }
 
