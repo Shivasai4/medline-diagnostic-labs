@@ -1,8 +1,11 @@
 import type { MetadataRoute } from "next"
+import { getSiteUrl } from "@/lib/site-url"
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://medlinediagnosticlabs.com").replace(/\/+$/, "")
+const siteUrl = getSiteUrl()
 
 export default function robots(): MetadataRoute.Robots {
+  const host = new URL(siteUrl).host
+
   return {
     rules: [
       {
@@ -12,6 +15,6 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: `${siteUrl}/sitemap.xml`,
-    host: siteUrl,
+    host,
   }
 }

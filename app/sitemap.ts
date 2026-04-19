@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next"
 import { services } from "@/data/services"
+import { getSiteUrl } from "@/lib/site-url"
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://medlinediagnosticlabs.com").replace(/\/+$/, "")
+const siteUrl = getSiteUrl()
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date()

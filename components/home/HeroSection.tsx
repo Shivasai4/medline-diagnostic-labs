@@ -15,7 +15,7 @@ export default function HeroSection() {
             </h1>
 
             <p className="mt-7 max-w-xl text-base leading-[1.85] text-foreground/85 sm:text-lg">
-              A clean, trusted diagnostics experience built for MedLine. Advanced lab workflows, strict quality control, and timely reporting across Hyderabad.
+              A clean, trusted diagnostics experience built for MedLine. Advanced lab workflows, strict quality control, and timely reporting across Hyderabad, including Nagole and nearby areas.
             </p>
 
             <div className="mt-9 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">

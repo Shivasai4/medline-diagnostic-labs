@@ -4,8 +4,9 @@ import { services } from "@/data/services"
 import AppointmentForm from "@/components/shared/AppointmentForm"
 import { CheckCircle, Clock, ChevronRight } from "lucide-react"
 import type { Metadata } from "next"
+import { getSiteUrl } from "@/lib/site-url"
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://medlinelabs.com").replace(/\/+$/, "")
+const siteUrl = getSiteUrl()
 
 export async function generateStaticParams() {
   return services.map((service) => ({ slug: service.slug }))
@@ -30,6 +31,12 @@ export async function generateMetadata({
       description: service.overview,
       url: `${siteUrl}/services/${service.slug}`,
       type: "article",
+      images: ["/cover.jpg"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${service.name} | Medline Diagnostic Labs`,
+      description: service.overview,
       images: ["/cover.jpg"],
     },
   }

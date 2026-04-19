@@ -5,10 +5,11 @@ import "./globals.css"
 import AnnouncementBar from "@/components/layout/AnnouncementBar"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
+import { getSiteUrl } from "@/lib/site-url"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-display" })
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://medlinediagnosticlabs.com").replace(/\/+$/, "")
+const siteUrl = getSiteUrl()
 const siteTitle = "Medline Diagnostic Labs | Leading To Better Health | Hyderabad"
 const siteDescription =
   "Medline Diagnostic Labs is a NABL-accredited diagnostic laboratory in Hyderabad. Book blood tests, full body checkups, and home sample collection with fast report turnaround."
@@ -23,7 +24,11 @@ export const metadata: Metadata = {
     "medline diagnostic labs",
     "medline diagnostics",
     "diagnostic lab hyderabad",
+    "diagnostic center hyderabad",
+    "diagnostic lab nagole",
+    "diagnostic center kothapet",
     "blood test hyderabad",
+    "home blood sample collection hyderabad",
     "home sample collection hyderabad",
     "nabl lab hyderabad",
     "full body checkup hyderabad",

@@ -94,8 +94,8 @@ export default function Footer() {
               <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
                 <div className="flex flex-col">
-                  <span className="whitespace-nowrap">Mon-Sat: 7:00 AM - 9:00 PM</span>
-                  <span className="whitespace-nowrap">Sun: 7:00 AM - 6:00 PM</span>
+                  <span className="whitespace-nowrap">Mon-Sat: 7:00 AM - 8:00 PM</span>
+                  <span className="whitespace-nowrap">Sunday: Closed</span>
                 </div>
               </li>
             </ul>
@@ -108,15 +108,15 @@ export default function Footer() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 text-center text-xs text-muted-foreground sm:flex-row sm:px-6 sm:text-left lg:px-8">
           <p>(c) 2026 MedLine Diagnostic Labs. All rights reserved.</p>
           <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-end sm:gap-5">
-            <a href="#" className="hover:text-primary transition-colors">
+            <Link href="/privacy-policy" className="hover:text-primary transition-colors">
               Privacy Policy
-            </a>
+            </Link>
             <Link href="/terms" className="hover:text-primary transition-colors">
               Terms & Conditions
             </Link>
-            <a href="#" className="hover:text-primary transition-colors">
+            <Link href="/refund-cancellation-policy" className="hover:text-primary transition-colors">
               Refund Policy
-            </a>
+            </Link>
           </div>
         </div>
       </div>

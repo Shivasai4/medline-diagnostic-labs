@@ -10,18 +10,22 @@ import QualitySection from "@/components/home/QualitySection"
 import ConnectSection from "@/components/home/ConnectSection"
 import MedicalWaveBackground from "@/components/home/MedicalWaveBackground"
 import type { Metadata } from "next"
+import { getSiteUrl } from "@/lib/site-url"
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://medlinelabs.com").replace(/\/+$/, "")
+const siteUrl = getSiteUrl()
 
 export const metadata: Metadata = {
   title: "Medline Diagnostic Labs | NABL Diagnostic Lab in Hyderabad",
   description:
-    "Medline Diagnostic Labs in Hyderabad offers blood tests, full body checkups, and home sample collection with trusted quality and quick report delivery.",
+    "Medline Diagnostic Labs in Hyderabad offers blood tests, full body checkups, and home sample collection with trusted quality and quick report delivery in Nagole and nearby areas.",
   keywords: [
     "medline diagnostic",
     "medline diagnostic labs",
     "medline diagnostics hyderabad",
     "diagnostic center in hyderabad",
+    "diagnostic lab in nagole",
+    "diagnostic center in kothapet",
+    "home blood test in hyderabad",
     "nabl diagnostic lab hyderabad",
   ],
   alternates: {
